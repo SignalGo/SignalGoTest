@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalGoTest", "SignalGoTest\SignalGoTest.csproj", "{5CBA208E-3764-411B-A0BA-70547576E80E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		ClientDebug|Any CPU = ClientDebug|Any CPU
+		ClientSecurityDebug|Any CPU = ClientSecurityDebug|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		SecurityDebug|Any CPU = SecurityDebug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5CBA208E-3764-411B-A0BA-70547576E80E}.ClientDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CBA208E-3764-411B-A0BA-70547576E80E}.ClientDebug|Any CPU.Build.0 = Debug|Any CPU
+		{5CBA208E-3764-411B-A0BA-70547576E80E}.ClientSecurityDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CBA208E-3764-411B-A0BA-70547576E80E}.ClientSecurityDebug|Any CPU.Build.0 = Debug|Any CPU
+		{5CBA208E-3764-411B-A0BA-70547576E80E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CBA208E-3764-411B-A0BA-70547576E80E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CBA208E-3764-411B-A0BA-70547576E80E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CBA208E-3764-411B-A0BA-70547576E80E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CBA208E-3764-411B-A0BA-70547576E80E}.SecurityDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CBA208E-3764-411B-A0BA-70547576E80E}.SecurityDebug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
