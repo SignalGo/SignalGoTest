@@ -323,7 +323,7 @@
                                 </Grid>-->
                             </TabItem>
                             <TabItem Header="Request">
-                                <Grid>
+                                <Grid IsEnabled="{Binding ElementName=btndisconnect,Path=IsEnabled}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="auto"/>
                                         <RowDefinition Height="*"/>

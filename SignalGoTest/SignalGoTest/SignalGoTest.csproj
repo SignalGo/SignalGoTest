@@ -42,11 +42,11 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="SignalGo.Client, Version=1.7.1.21542, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SignalGo.Client, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libs\SignalGo.Client.dll</HintPath>
     </Reference>
-    <Reference Include="SignalGo.Shared, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SignalGo.Shared, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libs\SignalGo.Shared.dll</HintPath>
     </Reference>
