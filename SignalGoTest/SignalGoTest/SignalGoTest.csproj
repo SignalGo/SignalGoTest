@@ -43,12 +43,10 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SignalGo.Client, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\SignalGo.Client.dll</HintPath>
+      <HintPath>..\packages\SignalGo.Net.Client.2.2.0.0\lib\net40\SignalGo.Client.dll</HintPath>
     </Reference>
-    <Reference Include="SignalGo.Shared, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\SignalGo.Shared.dll</HintPath>
+    <Reference Include="SignalGo.Shared, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SignalGo.Net.Shared.2.2.0.0\lib\net40\SignalGo.Shared.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
