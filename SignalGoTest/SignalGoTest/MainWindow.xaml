@@ -74,7 +74,41 @@
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Margin="0,5,5,0">
-                            <TreeView x:Name="TreeViewServices">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBox TextChanged="TextBox_TextChanged" Height="23">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                        <Style.Resources>
+                                            <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                                <VisualBrush.Visual>
+                                                    <Label Content="Search" Foreground="LightGray" />
+                                                </VisualBrush.Visual>
+                                            </VisualBrush>
+                                        </Style.Resources>
+                                        <Style.Triggers>
+                                            <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="Text" Value="{x:Null}">
+                                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                                <Setter Property="Background" Value="White" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <TreeView x:Name="TreeViewServices" SelectedItemChanged="TreeViewServices_SelectedItemChanged" Grid.Row="1" VirtualizingStackPanel.IsVirtualizing="False">
+                                <TreeView.ItemContainerStyle>
+                                    <Style TargetType="TreeViewItem">
+                                        <Setter Property="TreeViewItem.IsExpanded" Value="{Binding IsExpanded,Mode=TwoWay}"/>
+                                        <Setter Property="TreeViewItem.IsSelected" Value="{Binding IsSelected,Mode=TwoWay}"/>
+                                    </Style>
+                                </TreeView.ItemContainerStyle>
                                 <TreeView.Resources>
                                     <HierarchicalDataTemplate DataType="{x:Type self:ServiceDetailsInterface}" ItemsSource="{Binding Methods}">
                                         <StackPanel Orientation="Horizontal">

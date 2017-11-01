@@ -78,6 +78,7 @@ namespace SignalGoTest
         {
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
+        List<object> fullItems { get; set; }
 
         ClientProvider provider = null;
         private void btnconnect_Click(object sender, RoutedEventArgs e)
@@ -92,7 +93,8 @@ namespace SignalGoTest
                 provider.Connect(txtAddress.Text);
                 var result = provider.GetListOfServicesWithDetials(txtAddress.Text);
                 result.ProjectDomainDetailsInfo.Models = result.ProjectDomainDetailsInfo.Models.OrderBy(x => x.Name).ToList();
-                provider.RegisterClientServiceInterface(result.Services.FirstOrDefault().ServiceName);
+                if (result.Services.Count > 0)
+                    provider.RegisterClientServiceInterface(result.Services.FirstOrDefault().ServiceName);
 
                 btnconnect.IsEnabled = false;
                 btndisconnect.IsEnabled = true;
@@ -135,6 +137,8 @@ namespace SignalGoTest
                 items.Add(result.ProjectDomainDetailsInfo);
                 TreeViewServices.ItemsSource = null;
                 TreeViewServices.ItemsSource = items;
+                fullItems = items;
+                //SelectTreeViewOldItem();
                 //SaveData(new SignalGoTest.AppDataInfo() { ServerAddress = txtAddress.Text, ServiceName = txtServiceName.Text, Items = items });
             }
             catch (Exception ex)
@@ -156,9 +160,16 @@ namespace SignalGoTest
                 var findServer = newData.Services.FirstOrDefault(x => x.FullNameSpace == server.FullNameSpace);
                 if (findServer == null)
                     continue;
+                findServer.IsExpanded = server.IsExpanded;
+                findServer.IsSelected = server.IsSelected;
                 foreach (var service in server.Services)
                 {
                     var findService = findServer.Services.FirstOrDefault(x => x.FullNameSpace == service.FullNameSpace);
+                    if (findService != null)
+                    {
+                        findService.IsExpanded = service.IsExpanded;
+                        findService.IsSelected = service.IsSelected;
+                    }
                     foreach (var method in service.Methods)
                     {
                         if (findService == null)
@@ -166,11 +177,16 @@ namespace SignalGoTest
                         var find = (from x in findService.Methods where x.MethodName == method.MethodName && x.Parameters.Count == method.Parameters.Count select x).FirstOrDefault();
                         if (find != null)
                         {
+                            find.IsExpanded = method.IsExpanded;
+                            find.IsSelected = method.IsSelected;
+
                             foreach (var parameter in method.Parameters)
                             {
                                 var p = (from x in find.Parameters where x.Name == parameter.Name select x).FirstOrDefault();
                                 if (p != null)
                                 {
+                                    parameter.IsExpanded = p.IsExpanded;
+                                    parameter.IsSelected = p.IsSelected;
                                     p.IsJson = parameter.IsJson;
                                     p.Value = parameter.Value?.ToString();
                                     p.TemplateValue = parameter.TemplateValue?.ToString();
@@ -211,6 +227,7 @@ namespace SignalGoTest
                 TreeViewServices.DataContext = appdata.Items;
                 TreeViewServices.ItemsSource = null;
                 TreeViewServices.ItemsSource = items;
+                fullItems = items;
                 lstHistoryCalls.ItemsSource = appdata.Histories;
             }
             catch (Exception ex)
@@ -381,6 +398,381 @@ namespace SignalGoTest
             {
                 txtReponse.Text = ex.ToString();
             }
+        }
+
+        Type SelectedItemType { get; set; }
+        object SelectedItem { get; set; }
+        string SelectedUniqName { get; set; }
+        /// <summary>
+        /// Recursively search for an item in this subtree.
+        /// </summary>
+        /// <param name="container">
+        /// The parent ItemsControl. This can be a TreeView or a TreeViewItem.
+        /// </param>
+        /// <param name="item">
+        /// The item to search for.
+        /// </param>
+        /// <returns>
+        /// The TreeViewItem that contains the specified item.
+        /// </returns>
+        private TreeViewItem GetTreeViewItem(ItemsControl container, object item)
+        {
+            if (container != null)
+            {
+                if (container.DataContext == item)
+                {
+                    return container as TreeViewItem;
+                }
+
+                // Expand the current container
+                if (container is TreeViewItem && !((TreeViewItem)container).IsExpanded)
+                {
+                    container.SetValue(TreeViewItem.IsExpandedProperty, true);
+                }
+
+                // Try to generate the ItemsPresenter and the ItemsPanel.
+                // by calling ApplyTemplate.  Note that in the 
+                // virtualizing case even if the item is marked 
+                // expanded we still need to do this step in order to 
+                // regenerate the visuals because they may have been virtualized away.
+
+                container.ApplyTemplate();
+                ItemsPresenter itemsPresenter =
+                    (ItemsPresenter)container.Template.FindName("ItemsHost", container);
+                if (itemsPresenter != null)
+                {
+                    itemsPresenter.ApplyTemplate();
+                }
+                else
+                {
+                    // The Tree template has not named the ItemsPresenter, 
+                    // so walk the descendents and find the child.
+                    itemsPresenter = FindVisualChild<ItemsPresenter>(container);
+                    if (itemsPresenter == null)
+                    {
+                        container.UpdateLayout();
+
+                        itemsPresenter = FindVisualChild<ItemsPresenter>(container);
+                    }
+                }
+
+                Panel itemsHostPanel = (Panel)VisualTreeHelper.GetChild(itemsPresenter, 0);
+
+
+                // Ensure that the generator for this panel has been created.
+                UIElementCollection children = itemsHostPanel.Children;
+
+                VirtualizingStackPanel virtualizingPanel =
+                    itemsHostPanel as VirtualizingStackPanel;
+
+                for (int i = 0, count = container.Items.Count; i < count; i++)
+                {
+                    TreeViewItem subContainer;
+                    if (virtualizingPanel != null)
+                    {
+                        // Bring the item into view so 
+                        // that the container will be generated.
+                        virtualizingPanel.BringIntoView(new Rect(i, i, i, i));
+
+                        subContainer =
+                            (TreeViewItem)container.ItemContainerGenerator.
+                            ContainerFromIndex(i);
+                    }
+                    else
+                    {
+                        subContainer =
+                            (TreeViewItem)container.ItemContainerGenerator.
+                            ContainerFromIndex(i);
+
+                        // Bring the item into view to maintain the 
+                        // same behavior as with a virtualizing panel.
+                        subContainer.BringIntoView();
+                    }
+
+                    if (subContainer != null)
+                    {
+                        // Search the next level for the object.
+                        TreeViewItem resultContainer = GetTreeViewItem(subContainer, item);
+                        if (resultContainer != null)
+                        {
+                            return resultContainer;
+                        }
+                        else
+                        {
+                            // The object is not under this TreeViewItem
+                            // so collapse it.
+                            subContainer.IsExpanded = false;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+        private TreeViewItem GetTreeViewItemByName(ItemsControl container, string uniqName)
+        {
+            if (container != null)
+            {
+                if (GetObjectUniqName(container.DataContext) == uniqName)
+                {
+                    return container as TreeViewItem;
+                }
+
+                // Expand the current container
+                if (container is TreeViewItem && !((TreeViewItem)container).IsExpanded)
+                {
+                    container.SetValue(TreeViewItem.IsExpandedProperty, true);
+                }
+
+                // Try to generate the ItemsPresenter and the ItemsPanel.
+                // by calling ApplyTemplate.  Note that in the 
+                // virtualizing case even if the item is marked 
+                // expanded we still need to do this step in order to 
+                // regenerate the visuals because they may have been virtualized away.
+
+                container.ApplyTemplate();
+                ItemsPresenter itemsPresenter =
+                    (ItemsPresenter)container.Template.FindName("ItemsHost", container);
+                if (itemsPresenter != null)
+                {
+                    itemsPresenter.ApplyTemplate();
+                }
+                else
+                {
+                    // The Tree template has not named the ItemsPresenter, 
+                    // so walk the descendents and find the child.
+                    itemsPresenter = FindVisualChild<ItemsPresenter>(container);
+                    if (itemsPresenter == null)
+                    {
+                        container.UpdateLayout();
+
+                        itemsPresenter = FindVisualChild<ItemsPresenter>(container);
+                    }
+                }
+
+                Panel itemsHostPanel = (Panel)VisualTreeHelper.GetChild(itemsPresenter, 0);
+
+
+                // Ensure that the generator for this panel has been created.
+                UIElementCollection children = itemsHostPanel.Children;
+
+                VirtualizingStackPanel virtualizingPanel =
+                    itemsHostPanel as VirtualizingStackPanel;
+
+                for (int i = 0, count = container.Items.Count; i < count; i++)
+                {
+                    TreeViewItem subContainer;
+                    if (virtualizingPanel != null)
+                    {
+                        // Bring the item into view so 
+                        // that the container will be generated.
+                        virtualizingPanel.BringIntoView(new Rect(i, i, i, i));
+
+                        subContainer =
+                            (TreeViewItem)container.ItemContainerGenerator.
+                            ContainerFromIndex(i);
+                    }
+                    else
+                    {
+                        subContainer =
+                            (TreeViewItem)container.ItemContainerGenerator.
+                            ContainerFromIndex(i);
+
+                        // Bring the item into view to maintain the 
+                        // same behavior as with a virtualizing panel.
+                        subContainer.BringIntoView();
+                    }
+
+                    if (subContainer != null)
+                    {
+                        // Search the next level for the object.
+                        TreeViewItem resultContainer = GetTreeViewItemByName(subContainer, uniqName);
+                        if (resultContainer != null)
+                        {
+                            return resultContainer;
+                        }
+                        else
+                        {
+                            // The object is not under this TreeViewItem
+                            // so collapse it.
+                            subContainer.IsExpanded = false;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// Search for an element of a certain type in the visual tree.
+        /// </summary>
+        /// <typeparam name="T">The type of element to find.</typeparam>
+        /// <param name="visual">The parent element.</param>
+        /// <returns></returns>
+        private T FindVisualChild<T>(Visual visual) where T : Visual
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(visual); i++)
+            {
+                Visual child = (Visual)VisualTreeHelper.GetChild(visual, i);
+                if (child != null)
+                {
+                    T correctlyTyped = child as T;
+                    if (correctlyTyped != null)
+                    {
+                        return correctlyTyped;
+                    }
+
+                    T descendent = FindVisualChild<T>(child);
+                    if (descendent != null)
+                    {
+                        return descendent;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public void SaveTreeViewSelectedItem()
+        {
+            if (TreeViewServices.SelectedItem == null)
+                return;
+            SelectedItem = TreeViewServices.SelectedItem;
+            if (SelectedItem == null)
+                SelectedItemType = null;
+            else
+            {
+                SelectedItemType = SelectedItem.GetType();
+                SelectedUniqName = GetObjectUniqName(SelectedItem);
+
+            }
+
+        }
+
+        public void SelectTreeViewOldItem()
+        {
+            if (SelectedItem == null)
+                return;
+            var find = GetTreeViewItem(TreeViewServices, SelectedItem);
+            if (find != null)
+                find.IsSelected = true;
+            else
+            {
+                find = GetTreeViewItemByName(TreeViewServices, SelectedUniqName);
+                if (find != null)
+                    find.IsSelected = true;
+            }
+        }
+
+        public string GetObjectUniqName(object obj)
+        {
+            if (obj.GetType() == typeof(HttpControllerDetailsInfo))
+            {
+                var result = (HttpControllerDetailsInfo)obj;
+                return result.GetType().FullName + result.Url;
+            }
+            else if (obj.GetType() == typeof(ModelDetailsInfo))
+            {
+                var result = (ModelDetailsInfo)obj;
+                return result.GetType().FullName + result.FullNameSpace + result.Name;
+            }
+            else if (obj.GetType() == typeof(ProjectDomainDetailsInfo))
+            {
+                var result = (ProjectDomainDetailsInfo)obj;
+                return result.GetType().FullName;
+            }
+            else if (obj.GetType() == typeof(ProviderDetailsInfo))
+            {
+                var result = (ProviderDetailsInfo)obj;
+                return result.GetType().FullName;
+            }
+            else if (obj.GetType() == typeof(ServiceDetailsInfo))
+            {
+                var result = (ServiceDetailsInfo)obj;
+                return result.GetType().FullName + result.FullNameSpace + result.ServiceName + result.NameSpace;
+            }
+            else if (obj.GetType() == typeof(ServiceDetailsInterface))
+            {
+                var result = (ServiceDetailsInterface)obj;
+                return result.GetType().FullName + result.FullNameSpace + result.NameSpace;
+            }
+            else if (obj.GetType() == typeof(ServiceDetailsMethod))
+            {
+                var result = (ServiceDetailsMethod)obj;
+                return result.GetType().FullName + result.MethodName + result.Parameters.Count + result.ReturnType;
+            }
+            else if (obj.GetType() == typeof(ServiceDetailsParameterInfo))
+            {
+                var result = (ServiceDetailsParameterInfo)obj;
+                return result.GetType().FullName + result.Name + result.FullTypeName + result.Type;
+            }
+            else if (obj.GetType() == typeof(WebApiDetailsInfo))
+            {
+                var result = (WebApiDetailsInfo)obj;
+                return result.GetType().FullName;
+            }
+            return Guid.NewGuid().ToString();
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string value = ((TextBox)sender).Text;
+            if (string.IsNullOrEmpty(value))
+            {
+                TreeViewServices.ItemsSource = null;
+                TreeViewServices.ItemsSource = fullItems;
+            }
+            else
+            {
+                TreeViewServices.ItemsSource = null;
+                List<object> newItems = new List<object>();
+                foreach (var item in fullItems)
+                {
+                    ServiceDetailsInfo clone = null;
+                    bool canAdd = false;
+                    if (item.GetType() == typeof(ServiceDetailsInfo))
+                    {
+                        var result = (ServiceDetailsInfo)item;
+                        clone = result.Clone();
+
+                        foreach (var service in result.Services)
+                        {
+                            var cloneService = service.Clone();
+                            foreach (var method in service.Methods)
+                            {
+                                if (method.MethodName.ToLower().Contains(value))
+                                {
+                                    if (!clone.Services.Contains(cloneService))
+                                        clone.Services.Add(cloneService);
+                                    cloneService.Methods.Add(method);
+                                    canAdd = true;
+                                    continue;
+                                }
+
+                                foreach (var p in method.Parameters)
+                                {
+                                    if (p.Name.ToLower().Contains(value))
+                                    {
+                                        if (!clone.Services.Contains(cloneService))
+                                            clone.Services.Add(cloneService);
+                                        cloneService.Methods.Add(method);
+                                        canAdd = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (canAdd)
+                        newItems.Add(clone);
+                }
+                TreeViewServices.ItemsSource = newItems;
+            }
+        }
+
+        private void TreeViewServices_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            //SaveTreeViewSelectedItem();
         }
     }
 }

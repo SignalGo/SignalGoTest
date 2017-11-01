@@ -9,11 +9,27 @@
             data exchanger of json serialize or deserializer
             </summary>
         </member>
-        <member name="M:SignalGo.Shared.Converters.DataExchangeConverter.#ctor(SignalGo.SkipExchangeType)">
+        <member name="P:SignalGo.Shared.Converters.DataExchangeConverter.Server">
+            <summary>
+            server of signalGo that called exchanger
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Converters.DataExchangeConverter.Client">
+            <summary>
+            client of signalGo that called exchanger
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Converters.DataExchangeConverter.ExchangerTypes">
+            <summary>
+            exchange types
+            </summary>
+        </member>
+        <member name="M:SignalGo.Shared.Converters.DataExchangeConverter.#ctor(SignalGo.LimitExchangeType,SignalGo.Shared.DataTypes.CustomDataExchanger[])">
             <summary>
             constructor of this attrib neeed your strategy mode
             </summary>
             <param name="mode">strategy mode</param>
+            <param name="exchangerTypes">exchange types</param>
         </member>
         <member name="P:SignalGo.Shared.Converters.DataExchangeConverter.Mode">
             <summary>
@@ -60,6 +76,58 @@
             <param name="writer"></param>
             <param name="serializer"></param>
         </member>
+        <member name="T:SignalGo.Shared.DataTypes.CustomDataExchanger">
+            <summary>
+            system custom data exchanger help you to ignore or take custom properties to serialize data
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.DataTypes.CustomDataExchanger.CustomDataExchangerType">
+            <summary>
+            type of data exchanger you need
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.DataTypes.CustomDataExchanger.LimitationMode">
+            <summary>
+            limitation mode in incoming call or outgoingCall
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.DataTypes.CustomDataExchanger.Type">
+            <summary>
+            type of your class to ignore or take properties for serialize
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.DataTypes.CustomDataExchanger.Properties">
+            <summary>
+            property names that you need to ignore or take for serialize
+            </summary>
+        </member>
+        <member name="M:SignalGo.Shared.DataTypes.CustomDataExchanger.#ctor(System.Type,System.String[])">
+            <summary>
+            default constructor for data exchanger
+            </summary>
+            <param name="type">type of your class to ignore or take properties for serialize</param>
+            <param name="properties">property names that you need to ignore or take for serialize</param>
+        </member>
+        <member name="M:SignalGo.Shared.DataTypes.CustomDataExchanger.#ctor(System.Type,System.Type[])">
+            <summary>
+            default constructor for data exchanger
+            </summary>
+            <param name="type">type of your class to ignore or take properties for serialize</param>
+            <param name="properties">list of types you want to take methods of that types</param>
+        </member>
+        <member name="M:SignalGo.Shared.DataTypes.CustomDataExchanger.GetMethods(System.Type[])">
+            <summary>
+            get list of methods of type
+            </summary>
+            <param name="types">your types</param>
+            <returns>list of methods names</returns>
+        </member>
+        <member name="M:SignalGo.Shared.DataTypes.CustomDataExchanger.IsEnabled(System.Object,System.Object,System.String,System.Type)">
+            <summary>
+            you can customize enable and disable ignorable
+            </summary>
+            <returns>if you return false system force skip to ignore property</returns>
+        </member>
         <member name="T:SignalGo.Shared.DataTypes.IgnoreContract">
             <summary>
             ignore attribute
@@ -70,9 +138,48 @@
             contract of method name or property name
             </summary>
         </member>
+        <member name="T:SignalGo.Shared.DataTypes.InstanceType">
+            <summary>
+            type of instance
+            when cllient connect to servevr and registering service, service class get new instance
+            </summary>
+        </member>
+        <member name="F:SignalGo.Shared.DataTypes.InstanceType.SingleInstance">
+            <summary>
+            single instance for all of user
+            </summary>
+        </member>
+        <member name="F:SignalGo.Shared.DataTypes.InstanceType.MultipeInstance">
+            <summary>
+            create new instance per user connection
+            </summary>
+        </member>
         <member name="T:SignalGo.Shared.DataTypes.ServiceContractAttribute">
             <summary>
             service contract is communicate services between client and server
+            </summary>
+        </member>
+        <member name="M:SignalGo.Shared.DataTypes.ServiceContractAttribute.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:SignalGo.Shared.DataTypes.ServiceContractAttribute.#ctor(System.String,SignalGo.Shared.DataTypes.InstanceType)">
+            <summary>
+            
+            </summary>
+            <param name="name"></param>
+            <param name="instanceType"></param>
+        </member>
+        <member name="P:SignalGo.Shared.DataTypes.ServiceContractAttribute.Name">
+            <summary>
+            name of service
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.DataTypes.ServiceContractAttribute.InstanceType">
+            <summary>
+            when cllient connect to servevr and registering service, service class get new instance
             </summary>
         </member>
         <member name="T:SignalGo.Shared.DataTypes.SkipDataExchangeAttribute">
@@ -85,7 +192,7 @@
             skip mode
             </summary>
         </member>
-        <member name="M:SignalGo.Shared.DataTypes.SkipDataExchangeAttribute.#ctor(SignalGo.SkipExchangeType)">
+        <member name="M:SignalGo.Shared.DataTypes.SkipDataExchangeAttribute.#ctor(SignalGo.LimitExchangeType)">
             <summary>
             constructor of this attrib neeed your strategy mode
             </summary>
@@ -95,7 +202,7 @@
             <summary>
             you can create your custom skipper with override this method
             when you want to skip to serialize or deserialize your object return true else return false
-            default value is null, if you want to system use SkipExchangeType for ignore or not ignore object return null
+            default value is null, if you want to system use LimitExchangeType for ignore or not ignore object return null
             </summary>
             <param name="model">object model that want to serialize or deserialize</param>
             <param name="property">property of type that want serialize or deserialize,if it is null parameter type is fill</param>
@@ -355,6 +462,11 @@
             stream of file to read
             </summary>
         </member>
+        <member name="P:SignalGo.Shared.Http.HttpRequestController.ClientIpAddress">
+            <summary>
+            ip address of client
+            </summary>
+        </member>
         <member name="T:SignalGo.Shared.IO.GoStreamReader">
             <summary>
             read signalGo blocks of stream
@@ -403,7 +515,7 @@
         </member>
         <member name="P:SignalGo.Shared.Log.BaseLogInformation.CanWriteToFile">
             <summary>
-            after set call method result is is going to true and write to log file
+            after set call method result is going to true and write to log file
             </summary>
         </member>
         <member name="P:SignalGo.Shared.Log.MethodCallsLogger.IsEnabled">
@@ -411,12 +523,65 @@
             if false ignore write errors to .log file
             </summary>
         </member>
+        <member name="T:SignalGo.Shared.Log.FullLogInfo">
+            <summary>
+            full log of call and calbacks and http calls
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Log.FullLogInfo.CallOfMethods">
+            <summary>
+            logs of service method calls
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Log.FullLogInfo.CallbacksOfMethods">
+            <summary>
+            logs of callbacks method calls
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Log.FullLogInfo.HttpCallsOfMethods">
+            <summary>
+            logs of http methods calls
+            </summary>
+        </member>
+        <member name="T:SignalGo.Shared.Log.MethodCallsLogLoader">
+            <summary>
+            load full logs
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Log.MethodCallsLogLoader.LogFolder">
+            <summary>
+            folder of log files
+            </summary>
+        </member>
+        <member name="M:SignalGo.Shared.Log.MethodCallsLogLoader.GetFullLogInfo(System.DateTime,System.DateTime)">
+            <summary>
+            get full log info
+            </summary>
+            <param name="startDateTime"></param>
+            <param name="endDateTime"></param>
+            <returns></returns>
+        </member>
         <member name="M:SignalGo.Shared.Managers.SegmentManager.GenerateAndMixSegments(SignalGo.Shared.Models.ISegment)">
             <summary>
             generate segments, part number 0 = no any parts and part number -1 = end of parts
             </summary>
             <param name="segment"></param>
             <returns></returns>
+        </member>
+        <member name="P:SignalGo.Shared.Models.HttpControllerDetailsInfo.Id">
+            <summary>
+            id of class
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.HttpControllerDetailsInfo.IsExpanded">
+            <summary>
+            if item is exanded from treeview
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.HttpControllerDetailsInfo.IsSelected">
+            <summary>
+            if item is selected from treeview
+            </summary>
         </member>
         <member name="T:SignalGo.Shared.Models.KeyValue`2">
             <summary>
@@ -510,6 +675,11 @@
             Part number of call method
             </summary>
         </member>
+        <member name="P:SignalGo.Shared.Models.ModelDetailsInfo.Id">
+            <summary>
+            id of class
+            </summary>
+        </member>
         <member name="P:SignalGo.Shared.Models.ModelDetailsInfo.Name">
             <summary>
             name of model
@@ -530,6 +700,16 @@
             json template of model
             </summary>
         </member>
+        <member name="P:SignalGo.Shared.Models.ModelDetailsInfo.IsExpanded">
+            <summary>
+            if item is exanded from treeview
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ModelDetailsInfo.IsSelected">
+            <summary>
+            if item is selected from treeview
+            </summary>
+        </member>
         <member name="T:SignalGo.Shared.Models.ParameterInfo">
             <summary>
             a parameter data for method call
@@ -543,6 +723,36 @@
         <member name="P:SignalGo.Shared.Models.ParameterInfo.Value">
             <summary>
             value of parameter
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ProjectDomainDetailsInfo.Id">
+            <summary>
+            id of class
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ProjectDomainDetailsInfo.IsExpanded">
+            <summary>
+            if item is exanded from treeview
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ProjectDomainDetailsInfo.IsSelected">
+            <summary>
+            if item is selected from treeview
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ProviderDetailsInfo.Id">
+            <summary>
+            id of class
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ProviderDetailsInfo.IsExpanded">
+            <summary>
+            if item is exanded from treeview
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ProviderDetailsInfo.IsSelected">
+            <summary>
+            if item is selected from treeview
             </summary>
         </member>
         <member name="T:SignalGo.Shared.Models.ProviderSetting">
@@ -575,6 +785,11 @@
             service detail of project
             </summary>
         </member>
+        <member name="P:SignalGo.Shared.Models.ServiceDetailsInfo.Id">
+            <summary>
+            id of class
+            </summary>
+        </member>
         <member name="P:SignalGo.Shared.Models.ServiceDetailsInfo.ServiceName">
             <summary>
             name of service
@@ -600,9 +815,24 @@
             list of service interfaces
             </summary>
         </member>
+        <member name="P:SignalGo.Shared.Models.ServiceDetailsInfo.IsExpanded">
+            <summary>
+            if item is exanded from treeview
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ServiceDetailsInfo.IsSelected">
+            <summary>
+            if item is selected from treeview
+            </summary>
+        </member>
         <member name="T:SignalGo.Shared.Models.ServiceDetailsInterface">
             <summary>
             one of interface
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ServiceDetailsInterface.Id">
+            <summary>
+            id of class
             </summary>
         </member>
         <member name="P:SignalGo.Shared.Models.ServiceDetailsInterface.NameSpace">
@@ -625,9 +855,24 @@
             list of methods
             </summary>
         </member>
+        <member name="P:SignalGo.Shared.Models.ServiceDetailsInterface.IsExpanded">
+            <summary>
+            if item is exanded from treeview
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ServiceDetailsInterface.IsSelected">
+            <summary>
+            if item is selected from treeview
+            </summary>
+        </member>
         <member name="T:SignalGo.Shared.Models.ServiceDetailsMethod">
             <summary>
             method of service
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ServiceDetailsMethod.Id">
+            <summary>
+            id of class
             </summary>
         </member>
         <member name="P:SignalGo.Shared.Models.ServiceDetailsMethod.MethodName">
@@ -665,9 +910,24 @@
             list of parameters
             </summary>
         </member>
+        <member name="P:SignalGo.Shared.Models.ServiceDetailsMethod.IsExpanded">
+            <summary>
+            if item is exanded from treeview
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ServiceDetailsMethod.IsSelected">
+            <summary>
+            if item is selected from treeview
+            </summary>
+        </member>
         <member name="T:SignalGo.Shared.Models.ServiceDetailsParameterInfo">
             <summary>
             details of parameter
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ServiceDetailsParameterInfo.Id">
+            <summary>
+            id of class
             </summary>
         </member>
         <member name="P:SignalGo.Shared.Models.ServiceDetailsParameterInfo.Name">
@@ -703,6 +963,31 @@
         <member name="P:SignalGo.Shared.Models.ServiceDetailsParameterInfo.TemplateValue">
             <summary>
             example template of request data
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ServiceDetailsParameterInfo.IsExpanded">
+            <summary>
+            if item is exanded from treeview
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.ServiceDetailsParameterInfo.IsSelected">
+            <summary>
+            if item is selected from treeview
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.WebApiDetailsInfo.Id">
+            <summary>
+            id of class
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.WebApiDetailsInfo.IsExpanded">
+            <summary>
+            if item is exanded from treeview
+            </summary>
+        </member>
+        <member name="P:SignalGo.Shared.Models.WebApiDetailsInfo.IsSelected">
+            <summary>
+            if item is selected from treeview
             </summary>
         </member>
         <member name="T:SignalGo.DataType">
@@ -780,26 +1065,41 @@
             rsa and aes security encryption data
             </summary>
         </member>
-        <member name="T:SignalGo.SkipExchangeType">
+        <member name="T:SignalGo.LimitExchangeType">
             <summary>
             ignore a property or class in call or receive method
             </summary>
         </member>
-        <member name="F:SignalGo.SkipExchangeType.IncomingCall">
+        <member name="F:SignalGo.LimitExchangeType.IncomingCall">
             <summary>
-            skip this in all incoming calls
-            for example: you calling server method from client,if client sent value server skip this and set to null
+            Limit this in all incoming calls
+            for example: you calling server method from client, if client sent value server skip this and set to null
             </summary>
         </member>
-        <member name="F:SignalGo.SkipExchangeType.OutgoingCall">
+        <member name="F:SignalGo.LimitExchangeType.OutgoingCall">
             <summary>
-            skip this in all outgoing call
+            Limit this in all outgoing call
             for example: you calling client method from server this is one outgoig call
             </summary>
         </member>
-        <member name="F:SignalGo.SkipExchangeType.Both">
+        <member name="F:SignalGo.LimitExchangeType.Both">
             <summary>
-            skill all incoming and outgoing call
+            Limit all incoming and outgoing call
+            </summary>
+        </member>
+        <member name="T:SignalGo.CustomDataExchangerType">
+            <summary>
+            type of custom data exchanger
+            </summary>
+        </member>
+        <member name="F:SignalGo.CustomDataExchangerType.Take">
+            <summary>
+            if use take system will take properties for serialize
+            </summary>
+        </member>
+        <member name="F:SignalGo.CustomDataExchangerType.Ignore">
+            <summary>
+            if use ignore system ignore properties for serialize
             </summary>
         </member>
         <member name="T:System.AttributeHelper">
