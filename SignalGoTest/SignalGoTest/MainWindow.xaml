@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SignalGoTest"
         xmlns:self="clr-namespace:SignalGo.Shared.Models;assembly=SignalGo.Shared"
+        xmlns:types="clr-namespace:SignalGo.Shared.Helpers;assembly=SignalGo.Shared"
         mc:Ignorable="d"
-        Title="SignalGo Test" Height="500" Width="525" WindowState="Maximized">
+        Title="SignalGo Test" Height="500" Width="525" WindowState="Maximized" Background="#f6f6f6">
     <Window.Resources>
         <Style TargetType="Button">
             <Setter Property="Background" Value="#FF6DBECB"/>
@@ -20,6 +21,7 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Padding" Value="-2,0,0,0"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
             <!-- The Padding -2,0,0,0 is required because the TextBox
         seems to have an inherent "Padding" of about 2 pixels.
         Without the Padding property,
@@ -78,7 +80,7 @@
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <TextBox TextChanged="TextBox_TextChanged" Height="23">
+                            <TextBox x:Name="txtSearch" TextChanged="TextBox_TextChanged" Height="23">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                                         <Style.Resources>
@@ -102,7 +104,7 @@
                                     </Style>
                                 </TextBox.Style>
                             </TextBox>
-                            <TreeView x:Name="TreeViewServices" SelectedItemChanged="TreeViewServices_SelectedItemChanged" Grid.Row="1" VirtualizingStackPanel.IsVirtualizing="False">
+                            <TreeView x:Name="TreeViewServices" Background="#f6f6f6" SelectedItemChanged="TreeViewServices_SelectedItemChanged" Grid.Row="1" VirtualizingStackPanel.IsVirtualizing="False">
                                 <TreeView.ItemContainerStyle>
                                     <Style TargetType="TreeViewItem">
                                         <Setter Property="TreeViewItem.IsExpanded" Value="{Binding IsExpanded,Mode=TwoWay}"/>
@@ -119,6 +121,16 @@
                                             <TextBlock Text="]" Foreground="Blue" />
                                         </StackPanel>
                                     </HierarchicalDataTemplate>
+                                    <HierarchicalDataTemplate DataType="{x:Type self:CallbackServiceDetailsInfo}" ItemsSource="{Binding Methods}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="/SignalGoTest;component/Resources/interfaces.png" Margin="0,0,5,0" Width="18" Height="19" />
+                                            <TextBlock Text="{Binding NameSpace}" />
+                                            <TextBlock Text=" [" Foreground="Blue" />
+                                            <TextBlock Text="{Binding Methods.Count}" Foreground="Blue" />
+                                            <TextBlock Text="]" Foreground="Blue" />
+                                        </StackPanel>
+                                    </HierarchicalDataTemplate>
+
                                     <HierarchicalDataTemplate DataType="{x:Type self:ServiceDetailsInfo}" ItemsSource="{Binding Services}">
                                         <StackPanel Orientation="Horizontal">
                                             <Image Source="/SignalGoTest;component/Resources/classicons.png" Margin="0,0,5,0" Width="17" Height="17"  />
@@ -128,6 +140,7 @@
                                             <TextBlock Text=")" Foreground="Green" />
                                         </StackPanel>
                                     </HierarchicalDataTemplate>
+                                    
                                     <HierarchicalDataTemplate DataType="{x:Type self:ServiceDetailsMethod}" ItemsSource="{Binding Parameters}">
                                         <StackPanel Orientation="Horizontal">
                                             <Image Source="/SignalGoTest;component/Resources/methods.png" Margin="0,0,5,0" Width="10" Height="12"/>
@@ -166,7 +179,18 @@
                                     </HierarchicalDataTemplate>
                                     <HierarchicalDataTemplate DataType="{x:Type self:ModelDetailsInfo}">
                                         <StackPanel Orientation="Horizontal">
-                                            <Image Source="/SignalGoTest;component/Resources/classicons.png" Margin="0,0,5,0" Width="17" Height="17"  />
+                                            <Image Margin="0,0,5,0" Width="17" Height="17"  >
+                                                <Image.Style>
+                                                    <Style TargetType="{x:Type Image}">
+                                                        <Setter Property="Source" Value="/SignalGoTest;component/Resources/classicons.png" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ObjectType}" Value="{x:Static types:SerializeObjectType.Enum}">
+                                                                <Setter Property="Source" Value="/SignalGoTest;component/Resources/enumIcon.png"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Image.Style>
+                                            </Image>
                                             <TextBlock Text="{Binding Name}" />
                                         </StackPanel>
                                     </HierarchicalDataTemplate>
@@ -186,7 +210,24 @@
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="*"/>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Text="Comment: " Margin="0,0,0,5" Foreground="Green"/>
+                                                <TextBox Style="{StaticResource SelectableTextBlockLikeStyle}" Text="{Binding Comment,Mode=OneWay}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="Green"/>
+
+                                                <TextBlock Text="Service Name: " Margin="0,0,0,5" Grid.Row="1" Foreground="#FF55025C" />
+                                                <TextBox Style="{StaticResource SelectableTextBlockLikeStyle}" Text="{Binding ServiceName,Mode=OneWay}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="1" Foreground="#FF55025C"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type self:CallbackServiceDetailsInfo}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
                                                     <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Text="Comment: " Margin="0,0,0,5" Foreground="Green"/>
                                                 <TextBox Style="{StaticResource SelectableTextBlockLikeStyle}" Text="{Binding Comment,Mode=OneWay}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="Green"/>
@@ -203,7 +244,7 @@
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="auto"/>
-                                                    <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Text="Comment: " Margin="0,0,0,5" Foreground="Green"/>
                                                 <TextBox Style="{StaticResource SelectableTextBlockLikeStyle}" Text="{Binding Comment,Mode=OneWay}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="Green"/>
@@ -225,7 +266,7 @@
                                                     <RowDefinition Height="auto"/>
                                                     <RowDefinition Height="auto"/>
                                                     <RowDefinition Height="auto"/>
-                                                    <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Text="Comment: " Margin="0,0,0,5" Foreground="Green"/>
                                                 <TextBox Style="{StaticResource SelectableTextBlockLikeStyle}" Text="{Binding Comment,Mode=OneWay}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="Green"/>
@@ -258,7 +299,7 @@
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="auto"/>
                                                     <RowDefinition Height="auto"/>
-                                                    <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Text="Comment: " Margin="0,0,0,5" Foreground="Green"/>
                                                 <TextBox Style="{StaticResource SelectableTextBlockLikeStyle}" Text="{Binding Comment,Mode=OneWay}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="Green"/>
@@ -279,7 +320,7 @@
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="auto"/>
-                                                    <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Text="Web Api" Margin="0,0,0,5" Foreground="Green"/>
 
@@ -296,7 +337,7 @@
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="auto"/>
-                                                    <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Text="Url: " Margin="0,0,0,5" Foreground="#FF55025C" />
                                                 <TextBox Style="{StaticResource SelectableTextBlockLikeStyle}" Text="{Binding Url,Mode=OneWay}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="#FF55025C"/>
@@ -316,7 +357,7 @@
                                                     <RowDefinition Height="auto"/>
                                                     <RowDefinition Height="auto"/>
                                                     <RowDefinition Height="auto"/>
-                                                    <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Text="Comment: " Margin="0,0,0,5" Foreground="Green"/>
                                                 <TextBox Style="{StaticResource SelectableTextBlockLikeStyle}" Text="{Binding Comment,Mode=OneWay}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="Green"/>
@@ -339,7 +380,7 @@
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="auto"/>
-                                                    <RowDefinition Height="auto"/>
+                                                    <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
                                                 <TextBlock Text="Project Models" Margin="0,0,0,5" Foreground="Green"/>
 

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SignalGo.Client;
 using SignalGo.Shared.Models;
 using System;
@@ -24,18 +25,7 @@ namespace SignalGoTest
     /// </summary>
     public class MyClass
     {
-        /// <summary>
-        /// یک متد مثال است
-        /// </summary>
-        /// <param name="name">نام شخص مورد نظر</param>
-        /// <param name="age">سن شخص مورد نظر</param>
-        /// <returns>متن پیام می باشد</returns>
-        /// <exception cref="MainWindow.btnconnect">وقتی کلاس پروفایل خالی باشد یا نام یا نام خانوادگی وارد نشده باشد</exception>
-        /// <exception cref="MainWindow.txtAddress">خطای الکی</exception>
-        public string ExampleProperty(string name, int age)
-        {
-            return "ascass";
-        }
+        public string Ali { get; set; }
     }
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -44,6 +34,15 @@ namespace SignalGoTest
     {
         public MainWindow()
         {
+            //var ali = new MyClass();
+            //var serialize = JsonConvert.SerializeObject(ali);
+            //var vvvvv = (JObject)JsonConvert.DeserializeObject(serialize);
+            //foreach (var item in vvvvv.Properties())
+            //{
+            //    var find = typeof(MyClass).GetProperties().FirstOrDefault(x => x.Name == item.Name);
+            //    vvvvv[item.Name] = find.PropertyType.FullName;
+            //}
+            //var ssss = JsonConvert.SerializeObject(vvvvv);
             //try
             //{
             //    using (XamlCommentLoader loader = new XamlCommentLoader())
@@ -68,11 +67,23 @@ namespace SignalGoTest
 
 
             //}
+            FindCommand = new RelayCommand((obj) =>
+            {
+                return true;
+            },(obj) =>
+            {
+                txtSearch.Focus();
+                txtSearch.SelectAll();
+            });
+            this.InputBindings.Add(new KeyBinding(FindCommand, Key.F, ModifierKeys.Control));
+
             Closing += MainWindow_Closing;
             InitializeComponent();
             LoadData();
 
         }
+
+        public ICommand FindCommand { get; private set; }
 
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -130,9 +141,11 @@ namespace SignalGoTest
                 //    }
                 //}
                 UpdateData((ProviderDetailsInfo)TreeViewServices.DataContext, result);
+                result.ProjectDomainDetailsInfo.Models = result.ProjectDomainDetailsInfo.Models.OrderBy(x => x.ObjectType).ToList();
                 TreeViewServices.DataContext = result;
                 List<object> items = new List<object>();
                 items.AddRange(result.Services);
+                items.AddRange(result.Callbacks);
                 items.Add(result.WebApiDetailsInfo);
                 items.Add(result.ProjectDomainDetailsInfo);
                 TreeViewServices.ItemsSource = null;
@@ -150,6 +163,7 @@ namespace SignalGoTest
                 MessageBox.Show(ex.Message);
             }
         }
+
 
         public void UpdateData(ProviderDetailsInfo oldData, ProviderDetailsInfo newData)
         {
@@ -222,6 +236,7 @@ namespace SignalGoTest
                 //txtServiceName.Text = appdata.ServiceName;
                 List<object> items = new List<object>();
                 items.AddRange(appdata.Items.Services);
+                items.AddRange(appdata.Items.Callbacks);
                 items.Add(appdata.Items.WebApiDetailsInfo);
                 items.Add(appdata.Items.ProjectDomainDetailsInfo);
                 TreeViewServices.DataContext = appdata.Items;
@@ -716,7 +731,7 @@ namespace SignalGoTest
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string value = ((TextBox)sender).Text;
+            string value = ((TextBox)sender).Text.ToLower();
             if (string.IsNullOrEmpty(value))
             {
                 TreeViewServices.ItemsSource = null;
@@ -728,12 +743,13 @@ namespace SignalGoTest
                 List<object> newItems = new List<object>();
                 foreach (var item in fullItems)
                 {
-                    ServiceDetailsInfo clone = null;
+                    ServiceDetailsInfo cloneServiceDetailsInfo = null;
+                    ProjectDomainDetailsInfo cloneProjectDomainDetailsInfo = null;
                     bool canAdd = false;
                     if (item.GetType() == typeof(ServiceDetailsInfo))
                     {
                         var result = (ServiceDetailsInfo)item;
-                        clone = result.Clone();
+                        cloneServiceDetailsInfo = result.Clone();
 
                         foreach (var service in result.Services)
                         {
@@ -742,8 +758,8 @@ namespace SignalGoTest
                             {
                                 if (method.MethodName.ToLower().Contains(value))
                                 {
-                                    if (!clone.Services.Contains(cloneService))
-                                        clone.Services.Add(cloneService);
+                                    if (!cloneServiceDetailsInfo.Services.Contains(cloneService))
+                                        cloneServiceDetailsInfo.Services.Add(cloneService);
                                     cloneService.Methods.Add(method);
                                     canAdd = true;
                                     continue;
@@ -753,8 +769,8 @@ namespace SignalGoTest
                                 {
                                     if (p.Name.ToLower().Contains(value))
                                     {
-                                        if (!clone.Services.Contains(cloneService))
-                                            clone.Services.Add(cloneService);
+                                        if (!cloneServiceDetailsInfo.Services.Contains(cloneService))
+                                            cloneServiceDetailsInfo.Services.Add(cloneService);
                                         cloneService.Methods.Add(method);
                                         canAdd = true;
                                         break;
@@ -762,9 +778,56 @@ namespace SignalGoTest
                                 }
                             }
                         }
+                        if (canAdd)
+                            newItems.Add(cloneServiceDetailsInfo);
                     }
-                    if (canAdd)
-                        newItems.Add(clone);
+                    else if (item.GetType() == typeof(ProjectDomainDetailsInfo))
+                    {
+                        var result = (ProjectDomainDetailsInfo)item;
+                        cloneProjectDomainDetailsInfo = result.Clone();
+
+                        foreach (var service in result.Models)
+                        {
+                            var cloneService = service.Clone();
+                            if (service.FullNameSpace.ToLower().Contains(value) || service.Name.ToLower().Contains(value))
+                            {
+                                if (!cloneProjectDomainDetailsInfo.Models.Contains(cloneService))
+                                    cloneProjectDomainDetailsInfo.Models.Add(cloneService);
+                                //cloneService.Models.Add(method);
+                                canAdd = true;
+                                continue;
+                            }
+                        }
+                        if (canAdd)
+                            newItems.Add(cloneProjectDomainDetailsInfo);
+                    }
+                    else if (item.GetType() == typeof(CallbackServiceDetailsInfo))
+                    {
+                        var result = (CallbackServiceDetailsInfo)item;
+                        var cloneCallbackServiceDetailsInfo = result.Clone();
+                        
+                        foreach (var method in result.Methods)
+                        {
+                            if (method.MethodName.ToLower().Contains(value))
+                            {
+                                cloneCallbackServiceDetailsInfo.Methods.Add(method);
+                                canAdd = true;
+                                continue;
+                            }
+
+                            foreach (var p in method.Parameters)
+                            {
+                                if (p.Name.ToLower().Contains(value))
+                                {
+                                    cloneCallbackServiceDetailsInfo.Methods.Add(method);
+                                    canAdd = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (canAdd)
+                            newItems.Add(cloneCallbackServiceDetailsInfo);
+                    }
                 }
                 TreeViewServices.ItemsSource = newItems;
             }
