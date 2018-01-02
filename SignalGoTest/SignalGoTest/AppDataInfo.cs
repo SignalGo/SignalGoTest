@@ -8,6 +8,12 @@ namespace SignalGoTest
 {
     public class AppDataInfo
     {
+        public List<ConnectionData> Items = new List<ConnectionData>();
+    }
+
+    public class ConnectionData
+    {
+        public string Name { get; set; }
         public string ServerAddress { get; set; }
         public string ServiceName { get; set; }
         public ProviderDetailsInfo Items { get; set; }
