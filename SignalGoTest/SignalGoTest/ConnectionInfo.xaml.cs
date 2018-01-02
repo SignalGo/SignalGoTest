@@ -62,7 +62,16 @@ namespace SignalGoTest
                     var result = provider.GetListOfServicesWithDetials(address);
                     result.ProjectDomainDetailsInfo.Models = result.ProjectDomainDetailsInfo.Models.OrderBy(x => x.Name).ToList();
                     if (result.Services.Count > 0)
-                        provider.RegisterClientServiceInterface(result.Services.FirstOrDefault().ServiceName);
+                    {
+                        foreach (var item in result.Services)
+                        {
+                            AsyncActions.RunOnUI(() =>
+                            {
+                                busyIndicator.BusyContent = $"RegisterService {item.ServiceName}...";
+                            });
+                            provider.RegisterClientServiceInterface(item.ServiceName);
+                        }
+                    }
                     AsyncActions.RunOnUI(() =>
                     {
                         var connectionData = (ConnectionData)this.DataContext;
@@ -218,7 +227,8 @@ namespace SignalGoTest
                     return;
                 btnSend.IsEnabled = false;
                 var selectedMethod = (ServiceDetailsMethod)TreeViewServices.SelectedItem;
-                var serviceName = ((ServiceDetailsInfo)((List<object>)TreeViewServices.ItemsSource).FirstOrDefault()).ServiceName;
+                var service = (ServiceDetailsInfo)((List<object>)TreeViewServices.ItemsSource).Where(x => x.GetType() == typeof(ServiceDetailsInfo) && ((ServiceDetailsInfo)x).Services.Any(y => y.Methods.Any(j => j == selectedMethod))).FirstOrDefault();
+                var serviceName = service.ServiceName;
                 ServiceDetailsMethod sendReq = new ServiceDetailsMethod();
                 sendReq.MethodName = selectedMethod.MethodName;
                 sendReq.Parameters = new List<ServiceDetailsParameterInfo>();
@@ -281,8 +291,9 @@ namespace SignalGoTest
                 var cellTextBox = ((TextBlock)(column.GetCellContent(row)));
 
                 btn.IsEnabled = false;
-                var serviceName = ((ServiceDetailsInfo)((List<object>)TreeViewServices.ItemsSource).FirstOrDefault()).ServiceName;
                 var method = (ServiceDetailsMethod)TreeViewServices.SelectedItem;
+                var service = (ServiceDetailsInfo)((List<object>)TreeViewServices.ItemsSource).Where(x => x.GetType() == typeof(ServiceDetailsInfo) && ((ServiceDetailsInfo)x).Services.Any(y => y.Methods.Any(j => j == method))).FirstOrDefault();
+                var serviceName = service.ServiceName;
                 var parameter = (ServiceDetailsParameterInfo)btn.DataContext;
                 var paramIndex = method.Parameters.IndexOf(parameter);
                 MethodParameterDetails sendReq = new MethodParameterDetails();
