@@ -45,9 +45,6 @@
     <Reference Include="SignalGo.Client, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SignalGo.Net.Client.3.1.2\lib\net40\SignalGo.Client.dll</HintPath>
     </Reference>
-    <Reference Include="SignalGo.Shared, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SignalGo.Net.Shared.3.1.2\lib\net40\SignalGo.Shared.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -148,6 +145,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\enumIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\SignalGo\Github\SignalGo-full-net\SignalGo.Shared\SignalGo.Shared.csproj">
+      <Project>{06280743-1f6b-4a65-a4b5-bb757089a9a4}</Project>
+      <Name>SignalGo.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

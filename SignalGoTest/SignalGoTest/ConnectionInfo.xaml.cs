@@ -284,6 +284,7 @@ namespace SignalGoTest
             Button btn = (Button)sender;
             try
             {
+                bool isFull = btn.Content.ToString().Contains("Full");
                 if (TreeViewServices.SelectedItem == null || !(TreeViewServices.SelectedItem is ServiceDetailsMethod))
                     return;
                 var column = DGRequestValues.Columns[2] as DataGridTextColumn;
@@ -301,7 +302,7 @@ namespace SignalGoTest
                 sendReq.ParametersCount = method.Parameters.Count;
                 sendReq.ServiceName = serviceName;
                 sendReq.ParameterIndex = paramIndex;
-
+                sendReq.IsFull = isFull;
                 System.Threading.Tasks.Task.Factory.StartNew(() =>
                 {
                     try
@@ -309,7 +310,14 @@ namespace SignalGoTest
                         var response = provider.GetMethodParameterDetial(sendReq);
                         Dispatcher.Invoke(new Action(() =>
                         {
-                            parameter.TemplateValue = FormatJson(response);
+                            try
+                            {
+                                parameter.TemplateValue = FormatJson(response);
+                            }
+                            catch (Exception ex)
+                            {
+                                parameter.TemplateValue = response;
+                            }
                             BindingExpression bindingExpression = DGRequestValues.GetBindingExpression(DataGrid.ItemsSourceProperty);
                             Binding parentBinding = bindingExpression.ParentBinding;
 
