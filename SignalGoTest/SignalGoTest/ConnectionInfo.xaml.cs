@@ -37,7 +37,7 @@ namespace SignalGoTest
 
         List<object> fullItems { get; set; }
 
-        ClientProvider provider = null;
+        ClientProvider provider = new ClientProvider();
         private void btnconnect_Click(object sender, RoutedEventArgs e)
         {
             busyIndicator.BusyContent = "Connecting...";
@@ -47,10 +47,10 @@ namespace SignalGoTest
             {
                 try
                 {
-                    provider = new ClientProvider();
-                    provider.OnDisconnected = () =>
+                    provider.OnConnectionChanged = (connected) =>
                     {
-                        btndisconnect_Click(null, null);
+                        if (!connected)
+                            btndisconnect_Click(null, null);
                     };
                     provider.Connect(address);
                     AsyncActions.RunOnUI(() =>
@@ -97,8 +97,7 @@ namespace SignalGoTest
                 {
                     AsyncActions.RunOnUI(() =>
                     {
-                        provider.Dispose();
-                        provider = null;
+                        provider.Disconnect();
                         btnconnect.IsEnabled = true;
                         btndisconnect.IsEnabled = false;
                         MessageBox.Show(ex.Message);
@@ -201,10 +200,8 @@ namespace SignalGoTest
         {
             if (provider != null)
             {
-                provider.OnDisconnected = null;
-                provider.Dispose();
+                provider.Disconnect();
             }
-            provider = null;
             Dispatcher.Invoke(new Action(() =>
             {
                 btndisconnect.IsEnabled = false;

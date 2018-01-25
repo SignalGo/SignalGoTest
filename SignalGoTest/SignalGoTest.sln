@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalGoTest", "SignalGoTest\SignalGoTest.csproj", "{5CBA208E-3764-411B-A0BA-70547576E80E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalGo.Shared", "..\..\..\SignalGo\Github\SignalGo-full-net\SignalGo.Shared\SignalGo.Shared.csproj", "{06280743-1F6B-4A65-A4B5-BB757089A9A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,16 +24,6 @@ Global
 		{5CBA208E-3764-411B-A0BA-70547576E80E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5CBA208E-3764-411B-A0BA-70547576E80E}.SecurityDebug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5CBA208E-3764-411B-A0BA-70547576E80E}.SecurityDebug|Any CPU.Build.0 = Debug|Any CPU
-		{06280743-1F6B-4A65-A4B5-BB757089A9A4}.ClientDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06280743-1F6B-4A65-A4B5-BB757089A9A4}.ClientDebug|Any CPU.Build.0 = Debug|Any CPU
-		{06280743-1F6B-4A65-A4B5-BB757089A9A4}.ClientSecurityDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06280743-1F6B-4A65-A4B5-BB757089A9A4}.ClientSecurityDebug|Any CPU.Build.0 = Debug|Any CPU
-		{06280743-1F6B-4A65-A4B5-BB757089A9A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06280743-1F6B-4A65-A4B5-BB757089A9A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{06280743-1F6B-4A65-A4B5-BB757089A9A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{06280743-1F6B-4A65-A4B5-BB757089A9A4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{06280743-1F6B-4A65-A4B5-BB757089A9A4}.SecurityDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06280743-1F6B-4A65-A4B5-BB757089A9A4}.SecurityDebug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
