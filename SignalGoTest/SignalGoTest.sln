@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalGoTest", "SignalGoTest\SignalGoTest.csproj", "{5CBA208E-3764-411B-A0BA-70547576E80E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalGo.Client", "..\..\..\SignalGo\Github\SignalGo-full-net\SignalGo.Client\SignalGo.Client.csproj", "{DA4F99A9-69E4-48F1-8850-5298F7762AB9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalGo.Shared", "..\..\..\SignalGo\Github\SignalGo-full-net\SignalGo.Shared\SignalGo.Shared.csproj", "{5C599055-D80E-4DB0-AA89-B0F4370029EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +28,26 @@ Global
 		{5CBA208E-3764-411B-A0BA-70547576E80E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5CBA208E-3764-411B-A0BA-70547576E80E}.SecurityDebug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5CBA208E-3764-411B-A0BA-70547576E80E}.SecurityDebug|Any CPU.Build.0 = Debug|Any CPU
+		{DA4F99A9-69E4-48F1-8850-5298F7762AB9}.ClientDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA4F99A9-69E4-48F1-8850-5298F7762AB9}.ClientDebug|Any CPU.Build.0 = Debug|Any CPU
+		{DA4F99A9-69E4-48F1-8850-5298F7762AB9}.ClientSecurityDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA4F99A9-69E4-48F1-8850-5298F7762AB9}.ClientSecurityDebug|Any CPU.Build.0 = Debug|Any CPU
+		{DA4F99A9-69E4-48F1-8850-5298F7762AB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA4F99A9-69E4-48F1-8850-5298F7762AB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA4F99A9-69E4-48F1-8850-5298F7762AB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA4F99A9-69E4-48F1-8850-5298F7762AB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA4F99A9-69E4-48F1-8850-5298F7762AB9}.SecurityDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA4F99A9-69E4-48F1-8850-5298F7762AB9}.SecurityDebug|Any CPU.Build.0 = Debug|Any CPU
+		{5C599055-D80E-4DB0-AA89-B0F4370029EE}.ClientDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C599055-D80E-4DB0-AA89-B0F4370029EE}.ClientDebug|Any CPU.Build.0 = Debug|Any CPU
+		{5C599055-D80E-4DB0-AA89-B0F4370029EE}.ClientSecurityDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C599055-D80E-4DB0-AA89-B0F4370029EE}.ClientSecurityDebug|Any CPU.Build.0 = Debug|Any CPU
+		{5C599055-D80E-4DB0-AA89-B0F4370029EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C599055-D80E-4DB0-AA89-B0F4370029EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C599055-D80E-4DB0-AA89-B0F4370029EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C599055-D80E-4DB0-AA89-B0F4370029EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C599055-D80E-4DB0-AA89-B0F4370029EE}.SecurityDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C599055-D80E-4DB0-AA89-B0F4370029EE}.SecurityDebug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

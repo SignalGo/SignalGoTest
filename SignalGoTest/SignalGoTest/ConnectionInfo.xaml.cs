@@ -4,6 +4,7 @@ using SignalGo.Shared;
 using SignalGo.Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -49,9 +50,44 @@ namespace SignalGoTest
                 {
                     provider.OnConnectionChanged = (connected) =>
                     {
-                        if (!connected)
+                        if (connected == ConnectionStatus.Disconnected)
                             btndisconnect_Click(null, null);
                     };
+
+                    provider.OnCalledMethodAction = (callInfo) =>
+                    {
+                        AsyncActions.RunOnUI(() =>
+                        {
+                            try
+                            {
+                                var details = (ConnectionData)this.DataContext;
+                                var findService = details.CallbackCalls.FirstOrDefault(x => x.ServiceName == callInfo.ServiceName);
+                                if (findService == null)
+                                {
+                                    details.CallbackCalls.Add(new CallbackServiceLogInfo { ServiceName = callInfo.ServiceName });
+                                    findService = details.CallbackCalls.FirstOrDefault(x => x.ServiceName == callInfo.ServiceName);
+                                }
+                                var logInfo = new CallbackMethodLogInfo() { DateTime = DateTime.Now, MethodName = callInfo.MethodName };
+                                var findFromBase = details.Items.Callbacks.FirstOrDefault(x => x.ServiceName == callInfo.ServiceName).Methods.FirstOrDefault(x => x.MethodName == callInfo.MethodName && x.Requests.First().Parameters.Count == callInfo.Parameters.Count);
+
+                                foreach (var item in callInfo.Parameters)
+                                {
+                                    var token = Newtonsoft.Json.Linq.JToken.Parse(item.Value);
+                                    string value = token.ToString(Newtonsoft.Json.Formatting.Indented);
+                                    var findedParam = findFromBase.Requests.First().Parameters[callInfo.Parameters.IndexOf(item)];
+                                    logInfo.Parameters.Add(new CallbackParameterLogInfo() { Value = value, Name = findedParam.Name, ParameterType = findedParam.Type });
+                                }
+
+                                findService.Calls.Insert(0, logInfo);
+                                btnSave_Click(null, null);
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+                        });
+                    };
+
                     provider.Connect(address);
                     AsyncActions.RunOnUI(() =>
                     {
@@ -60,6 +96,7 @@ namespace SignalGoTest
                         btndisconnect.IsEnabled = true;
                     });
                     var result = provider.GetListOfServicesWithDetials(address);
+                    DoOrder(result);
                     result.ProjectDomainDetailsInfo.Models = result.ProjectDomainDetailsInfo.Models.OrderBy(x => x.Name).ToList();
                     if (result.Services.Count > 0)
                     {
@@ -109,6 +146,17 @@ namespace SignalGoTest
         }
 
 
+        public static void DoOrder(ProviderDetailsInfo result)
+        {
+            foreach (var serviceClass in result.Services)
+            {
+                foreach (var interfaceInfo in serviceClass.Services)
+                {
+                    interfaceInfo.Methods = interfaceInfo.Methods?.OrderBy(x => x.MethodName).ToList();
+                }
+            }
+        }
+
         public void UpdateData(ProviderDetailsInfo oldData, ProviderDetailsInfo newData)
         {
             if (oldData == null || newData == null)
@@ -132,22 +180,27 @@ namespace SignalGoTest
                     {
                         if (findService == null)
                             continue;
-                        var find = (from x in findService.Methods where x.MethodName == method.MethodName && x.Parameters.Count == method.Parameters.Count select x).FirstOrDefault();
+                        var find = (from x in findService.Methods where x.MethodName == method.MethodName && x.Requests.First().Parameters.Count == method.Requests.First().Parameters.Count select x).FirstOrDefault();
                         if (find != null)
                         {
                             find.IsExpanded = method.IsExpanded;
                             find.IsSelected = method.IsSelected;
-
-                            foreach (var parameter in method.Parameters)
+                            foreach (var request in method.Requests)
                             {
-                                var p = (from x in find.Parameters where x.Name == parameter.Name select x).FirstOrDefault();
-                                if (p != null)
+                                var findRequest = find.Requests.FirstOrDefault(x => x.Name == request.Name);
+                                if (findRequest == null)
+                                    continue;
+                                foreach (var parameter in request.Parameters)
                                 {
-                                    parameter.IsExpanded = p.IsExpanded;
-                                    parameter.IsSelected = p.IsSelected;
-                                    p.IsJson = parameter.IsJson;
-                                    p.Value = parameter.Value?.ToString();
-                                    p.TemplateValue = parameter.TemplateValue?.ToString();
+                                    var p = (from x in findRequest.Parameters where x.Name == parameter.Name select x).FirstOrDefault();
+                                    if (p != null)
+                                    {
+                                        parameter.IsExpanded = p.IsExpanded;
+                                        parameter.IsSelected = p.IsSelected;
+                                        p.IsJson = parameter.IsJson;
+                                        p.Value = parameter.Value?.ToString();
+                                        p.TemplateValue = parameter.TemplateValue?.ToString();
+                                    }
                                 }
                             }
                         }
@@ -220,18 +273,21 @@ namespace SignalGoTest
         {
             try
             {
-                if (TreeViewServices.SelectedItem == null || !(TreeViewServices.SelectedItem is ServiceDetailsMethod))
+                if (lstRequests.SelectedItem == null || !(lstRequests.SelectedItem is ServiceDetailsRequestInfo))
                     return;
                 btnSend.IsEnabled = false;
-                var selectedMethod = (ServiceDetailsMethod)TreeViewServices.SelectedItem;
+                var selectedRequest = (ServiceDetailsRequestInfo)lstRequests.SelectedItem;
+                var selectedMethod = TreeViewServices.SelectedItem as ServiceDetailsMethod;
+
                 var service = (ServiceDetailsInfo)((List<object>)TreeViewServices.ItemsSource).Where(x => x.GetType() == typeof(ServiceDetailsInfo) && ((ServiceDetailsInfo)x).Services.Any(y => y.Methods.Any(j => j == selectedMethod))).FirstOrDefault();
                 var serviceName = service.ServiceName;
-                ServiceDetailsMethod sendReq = new ServiceDetailsMethod();
-                sendReq.MethodName = selectedMethod.MethodName;
+                ServiceDetailsMethod sendMethod = new ServiceDetailsMethod();
+                var sendReq = new ServiceDetailsRequestInfo();
+                sendMethod.MethodName = selectedMethod.MethodName;
                 sendReq.Parameters = new List<ServiceDetailsParameterInfo>();
-                if (selectedMethod.Parameters != null)
+                if (selectedRequest.Parameters != null)
                 {
-                    foreach (var item in selectedMethod.Parameters)
+                    foreach (var item in selectedRequest.Parameters)
                     {
                         sendReq.Parameters.Add(new ServiceDetailsParameterInfo() { Name = item.Name, Type = item.Type, Value = item.IsJson ? item.Value : JsonConvert.SerializeObject(item.Value), IsJson = item.IsJson });
                     }
@@ -241,7 +297,7 @@ namespace SignalGoTest
                     try
                     {
                         string request = "";
-                        var response = provider.SendRequest(serviceName, sendReq, out request);
+                        var response = provider.SendRequest(serviceName, sendMethod, sendReq, out request);
 
                         Dispatcher.Invoke(new Action(() =>
                         {
@@ -249,7 +305,7 @@ namespace SignalGoTest
                             if (history == null)
                                 history = new List<SignalGoTest.HistoryCallInfo>();
                             response = response == null ? "void ok" : FormatJson(response);
-                            history.Insert(0, new HistoryCallInfo() { CallDateTime = DateTime.Now, MethodName = sendReq.MethodName, Request = FormatJson(request), Response = response });
+                            history.Insert(0, new HistoryCallInfo() { CallDateTime = DateTime.Now, MethodName = sendMethod.MethodName, Request = FormatJson(request), Response = response });
                             lstHistoryCalls.ItemsSource = null;
                             lstHistoryCalls.ItemsSource = history;
                             txtReponse.Text = response;
@@ -282,7 +338,7 @@ namespace SignalGoTest
             try
             {
                 bool isFull = btn.Content.ToString().Contains("Full");
-                if (TreeViewServices.SelectedItem == null || !(TreeViewServices.SelectedItem is ServiceDetailsMethod))
+                if (lstRequests.SelectedItem == null || !(lstRequests.SelectedItem is ServiceDetailsRequestInfo))
                     return;
                 var column = DGRequestValues.Columns[2] as DataGridTextColumn;
                 DataGridRow row = DGRequestValues.ItemContainerGenerator.ContainerFromIndex((DGRequestValues.SelectedIndex)) as DataGridRow;
@@ -293,10 +349,10 @@ namespace SignalGoTest
                 var service = (ServiceDetailsInfo)((List<object>)TreeViewServices.ItemsSource).Where(x => x.GetType() == typeof(ServiceDetailsInfo) && ((ServiceDetailsInfo)x).Services.Any(y => y.Methods.Any(j => j == method))).FirstOrDefault();
                 var serviceName = service.ServiceName;
                 var parameter = (ServiceDetailsParameterInfo)btn.DataContext;
-                var paramIndex = method.Parameters.IndexOf(parameter);
+                var paramIndex = method.Requests.First().Parameters.IndexOf(parameter);
                 MethodParameterDetails sendReq = new MethodParameterDetails();
                 sendReq.MethodName = method.MethodName;
-                sendReq.ParametersCount = method.Parameters.Count;
+                sendReq.ParametersCount = method.Requests.First().Parameters.Count;
                 sendReq.ServiceName = serviceName;
                 sendReq.ParameterIndex = paramIndex;
                 sendReq.IsFull = isFull;
@@ -668,7 +724,7 @@ namespace SignalGoTest
             else if (obj.GetType() == typeof(ServiceDetailsMethod))
             {
                 var result = (ServiceDetailsMethod)obj;
-                return result.GetType().FullName + result.MethodName + result.Parameters.Count + result.ReturnType;
+                return result.GetType().FullName + result.MethodName + result.Requests.First().Parameters.Count + result.ReturnType;
             }
             else if (obj.GetType() == typeof(ServiceDetailsParameterInfo))
             {
@@ -719,15 +775,18 @@ namespace SignalGoTest
                                     continue;
                                 }
 
-                                foreach (var p in method.Parameters)
+                                foreach (var request in method.Requests)
                                 {
-                                    if (p.Name.ToLower().Contains(value))
+                                    foreach (var p in request.Parameters)
                                     {
-                                        if (!cloneServiceDetailsInfo.Services.Contains(cloneService))
-                                            cloneServiceDetailsInfo.Services.Add(cloneService);
-                                        cloneService.Methods.Add(method);
-                                        canAdd = true;
-                                        break;
+                                        if (p.Name.ToLower().Contains(value))
+                                        {
+                                            if (!cloneServiceDetailsInfo.Services.Contains(cloneService))
+                                                cloneServiceDetailsInfo.Services.Add(cloneService);
+                                            cloneService.Methods.Add(method);
+                                            canAdd = true;
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -768,14 +827,16 @@ namespace SignalGoTest
                                 canAdd = true;
                                 continue;
                             }
-
-                            foreach (var p in method.Parameters)
+                            foreach (var request in method.Requests)
                             {
-                                if (p.Name.ToLower().Contains(value))
+                                foreach (var p in request.Parameters)
                                 {
-                                    cloneCallbackServiceDetailsInfo.Methods.Add(method);
-                                    canAdd = true;
-                                    break;
+                                    if (p.Name.ToLower().Contains(value))
+                                    {
+                                        cloneCallbackServiceDetailsInfo.Methods.Add(method);
+                                        canAdd = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -790,6 +851,38 @@ namespace SignalGoTest
         private void TreeViewServices_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             //SaveTreeViewSelectedItem();
+        }
+
+        private void btnAddRequest_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ObservableCollection<ServiceDetailsRequestInfo> requests = lstRequests.ItemsSource as ObservableCollection<ServiceDetailsRequestInfo>;
+                var selectedMethod = (ServiceDetailsMethod)TreeViewServices.SelectedItem;
+                if (requests == null || selectedMethod == null)
+                    return;
+                string newName = newRequestName.Text.Trim();
+                if (requests.Any(x => x.Name == newName) || string.IsNullOrEmpty(newName))
+                {
+                    MessageBox.Show("name is exist or empty!");
+                    return;
+                }
+                var request = new ServiceDetailsRequestInfo() { Name = newName, Parameters = new List<ServiceDetailsParameterInfo>() };
+                foreach (var item in selectedMethod.Requests.FirstOrDefault().Parameters)
+                {
+                    var clone = item.Clone();
+                    clone.Value = null;
+                    clone.TemplateValue = "";
+                    request.Parameters.Add(clone);
+                }
+                requests.Add(request);
+                newRequestName.Text = "";
+                MainWindow.SaveData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

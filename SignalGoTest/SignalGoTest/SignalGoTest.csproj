@@ -45,12 +45,6 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="SignalGo.Client, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SignalGo.Net.Client.3.2.0\lib\net45\SignalGo.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="SignalGo.Shared, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SignalGo.Net.Shared.3.2.0\lib\net45\SignalGo.Shared.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -152,6 +146,16 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\enumIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\SignalGo\Github\SignalGo-full-net\SignalGo.Client\SignalGo.Client.csproj">
+      <Project>{da4f99a9-69e4-48f1-8850-5298f7762ab9}</Project>
+      <Name>SignalGo.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\SignalGo\Github\SignalGo-full-net\SignalGo.Shared\SignalGo.Shared.csproj">
+      <Project>{5c599055-d80e-4db0-aa89-b0f4370029ee}</Project>
+      <Name>SignalGo.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

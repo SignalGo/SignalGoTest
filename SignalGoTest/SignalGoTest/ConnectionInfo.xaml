@@ -8,7 +8,7 @@
              xmlns:self="clr-namespace:SignalGo.Shared.Models;assembly=SignalGo.Shared"
              xmlns:types="clr-namespace:SignalGo.Shared.Helpers;assembly=SignalGo.Shared"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="1000" d:DesignWidth="1000">
     <controls:BusyIndicator x:Name="busyIndicator">
         <Grid Margin="10">
             <Grid.RowDefinitions>
@@ -29,10 +29,13 @@
                     <TabItem Header="Services">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="6*"/>
                             </Grid.ColumnDefinitions>
-                            <Grid Margin="0,5,5,0">
+                            <Grid Margin="0,5,0,0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="*"/>
@@ -98,12 +101,12 @@
                                             </StackPanel>
                                         </HierarchicalDataTemplate>
 
-                                        <HierarchicalDataTemplate DataType="{x:Type self:ServiceDetailsMethod}" ItemsSource="{Binding Parameters}">
+                                        <HierarchicalDataTemplate DataType="{x:Type self:ServiceDetailsMethod}" ItemsSource="{Binding Requests[0].Parameters}">
                                             <StackPanel Orientation="Horizontal">
                                                 <Image Source="/SignalGoTest;component/Resources/methods.png" Margin="0,0,5,0" Width="10" Height="12"/>
                                                 <TextBlock Text="{Binding MethodName}" />
                                                 <TextBlock Text=" (" Foreground="#FF7A0936" />
-                                                <TextBlock Text="{Binding Parameters.Count}" Foreground="#FF7A0936" />
+                                                <TextBlock Text="{Binding Requests[0].Parameters.Count}" Foreground="#FF7A0936" />
                                                 <TextBlock Text=")" Foreground="#FF7A0936" />
                                             </StackPanel>
                                         </HierarchicalDataTemplate>
@@ -155,7 +158,30 @@
 
                                 </TreeView>
                             </Grid>
-                            <TabControl  Margin="0,5,0,0" Grid.Column="1">
+                            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+                            <Grid Grid.Column="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="newRequestName" Text=""/>
+                                    <Button x:Name="btnAddRequest" Click="btnAddRequest_Click" Content="Add" Grid.Column="1" Padding="10,0,10,0"/>
+                                </Grid>
+                                <ListBox x:Name="lstRequests" Grid.Row="1" ItemsSource="{Binding SelectedItem.Requests,ElementName=TreeViewServices}" DisplayMemberPath="Name">
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListBoxItem}">
+                                            <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                </ListBox>
+                            </Grid>
+                            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
+                            <TabControl Margin="0,5,0,0" Grid.Column="4">
                                 <TabItem Header="Information">
                                     <ContentControl Content="{Binding}" DataContext="{Binding ElementName=TreeViewServices,Path=SelectedItem}" Grid.Column="2">
                                         <ContentControl.Resources>
@@ -241,7 +267,7 @@
                                                     <TextBox Style="{StaticResource SelectableTextBlockLikeStyle}" Text="{Binding ReturnType,Mode=OneWay}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="4" Foreground="#FFCE4A00"/>
 
                                                     <TextBlock Text="Parameters Count: " Margin="0,0,0,5" Grid.Row="5" Foreground="#FF55025C" />
-                                                    <TextBlock Text="{Binding Parameters.Count}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="5" Foreground="#FF55025C"/>
+                                                    <TextBlock Text="{Binding Requests[0].Parameters.Count}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="5" Foreground="#FF55025C"/>
 
                                                     <TextBlock Text="Test Example: " Margin="0,0,0,5" Grid.Row="6" Foreground="#FF4722D7" />
                                                     <TextBox Style="{StaticResource SelectableTextBlockLikeStyle}" Text="{Binding TestExample}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="6" Foreground="#FF4722D7"/>
@@ -366,7 +392,7 @@
                                         </Grid.RowDefinitions>
 
                                         <TextBlock Text="Request Values:"/>
-                                        <DataGrid x:Name="DGRequestValues" ScrollViewer.CanContentScroll="False" AutoGenerateColumns="False" CanUserAddRows="False" DataContext="{Binding ElementName=TreeViewServices,Path=SelectedItem}" ItemsSource="{Binding Parameters}" Margin="0,5,0,0" Grid.Row="1" HeadersVisibility="Column">
+                                        <DataGrid x:Name="DGRequestValues" ScrollViewer.CanContentScroll="False" AutoGenerateColumns="False" CanUserAddRows="False" DataContext="{Binding ElementName=lstRequests,Path=SelectedItem}" ItemsSource="{Binding Parameters}" Margin="0,5,0,0" Grid.Row="1" HeadersVisibility="Column">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Name}"/>
                                                 <DataGridTemplateColumn Header="Type" IsReadOnly="True">
@@ -416,14 +442,14 @@
                                     </Grid>
                                 </TabItem>
                             </TabControl>
-
                         </Grid>
                     </TabItem>
                     <TabItem Header="History Calls">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="2*"/>
                             </Grid.ColumnDefinitions>
                             <Grid Margin="0,5,5,0">
                                 <ListBox x:Name="lstHistoryCalls" ItemsSource="{Binding Histories}">
@@ -439,7 +465,8 @@
                                     </ListBox.ItemTemplate>
                                 </ListBox>
                             </Grid>
-                            <Grid Grid.Column="1">
+                            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+                            <Grid Grid.Column="2">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="*"/>
@@ -453,9 +480,74 @@
                             </Grid>
                         </Grid>
                     </TabItem>
+                    <TabItem Header="History Callbacks">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Margin="0,5,0,0">
+                                <TreeView x:Name="lstCallbackCalls" ItemsSource="{Binding CallbackCalls}" Background="#f6f6f6" VirtualizingStackPanel.IsVirtualizing="False">
+                                    <!--<TreeView.ItemContainerStyle>
+                                            <Style TargetType="TreeViewItem">
+                                                <Setter Property="TreeViewItem.IsExpanded" Value="{Binding IsExpanded,Mode=TwoWay}"/>
+                                                <Setter Property="TreeViewItem.IsSelected" Value="{Binding IsSelected,Mode=TwoWay}"/>
+                                            </Style>
+                                        </TreeView.ItemContainerStyle>-->
+                                    <TreeView.Resources>
+                                        <HierarchicalDataTemplate DataType="{x:Type self:CallbackServiceLogInfo}" ItemsSource="{Binding Calls}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="/SignalGoTest;component/Resources/interfaces.png" Margin="0,0,5,0" Width="18" Height="19" />
+                                                <TextBlock Text="{Binding ServiceName}" />
+                                                <!--<TextBlock Text=" [" Foreground="Blue" />
+                                                <TextBlock Text="{Binding Methods.Count}" Foreground="Blue" />
+                                                <TextBlock Text="]" Foreground="Blue" />-->
+                                            </StackPanel>
+                                        </HierarchicalDataTemplate>
+                                        <HierarchicalDataTemplate DataType="{x:Type self:CallbackMethodLogInfo}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="/SignalGoTest;component/Resources/methods.png" Margin="0,0,5,0" Width="10" Height="12"/>
+                                                <TextBlock Text="{Binding MethodName}" />
+                                                <!--<TextBlock Text=" [" Foreground="Blue" />
+                                                <TextBlock Text="{Binding Methods.Count}" Foreground="Blue" />
+                                                <TextBlock Text="]" Foreground="Blue" />-->
+                                            </StackPanel>
+                                        </HierarchicalDataTemplate>
+                                    </TreeView.Resources>
+                                </TreeView>
+                            </Grid>
+                            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+                            <Grid Grid.Column="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Method Name: "/>
+                                    <TextBlock Text="{Binding ElementName=lstCallbackCalls,Path=SelectedItem.MethodName}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,5,0,0">
+                                    <TextBlock Text="Date Time: "/>
+                                    <TextBlock Text="{Binding ElementName=lstCallbackCalls,Path=SelectedItem.DateTime}"/>
+                                </StackPanel>
+                                <TextBlock Text="Result:" Grid.Row="2" Margin="0,5,0,0"/>
+                                <Grid Grid.Row="3" Margin="0,5,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <ListBox x:Name="lstCallbacksParameters" ItemsSource="{Binding ElementName=lstCallbackCalls,Path=SelectedItem.Parameters}" DisplayMemberPath="Name"/>
+                                    <TextBox Grid.Column="1" TextWrapping="Wrap" IsReadOnly="True" Text="{Binding ElementName=lstCallbacksParameters,Path=SelectedItem.Value}" />
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </TabItem>
                 </TabControl>
             </Grid>
         </Grid>
     </controls:BusyIndicator>
-   
+
 </UserControl>

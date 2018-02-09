@@ -84,6 +84,7 @@ namespace SignalGoTest
                 CurrentAppData = Newtonsoft.Json.JsonConvert.DeserializeObject<AppDataInfo>(File.ReadAllText(path, Encoding.UTF8));
                 foreach (var item in CurrentAppData.Items)
                 {
+                    ConnectionInfo.DoOrder(item.Items);
                     tabControl.Items.Insert(0, new TabItem() { DataContext = item, Style = (Style)tabControl.TryFindResource("removableTab"), Content = new ConnectionInfo() { DataContext = item } });
                 }
 
