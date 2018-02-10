@@ -148,6 +148,8 @@ namespace SignalGoTest
 
         public static void DoOrder(ProviderDetailsInfo result)
         {
+            if (result == null || result.Services == null)
+                return;
             foreach (var serviceClass in result.Services)
             {
                 foreach (var interfaceInfo in serviceClass.Services)
@@ -228,6 +230,8 @@ namespace SignalGoTest
             try
             {
                 var connectionData = (ConnectionData)this.DataContext;
+                if (connectionData == null || connectionData.Items == null)
+                    return;
                 //string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appdata.db");
                 //var appdata = Newtonsoft.Json.JsonConvert.DeserializeObject<AppDataInfo>(File.ReadAllText(path, Encoding.UTF8));
                 //txtAddress.Text = appdata.ServerAddress;
