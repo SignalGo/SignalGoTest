@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -163,6 +166,9 @@ namespace SignalGoTest
         {
             if (oldData == null || newData == null)
                 return;
+            newData.IsExpanded = oldData.IsExpanded;
+            newData.IsSelected = oldData.IsSelected;
+
             foreach (var server in oldData.Services)
             {
                 var findServer = newData.Services.FirstOrDefault(x => x.FullNameSpace == server.FullNameSpace);
@@ -207,6 +213,53 @@ namespace SignalGoTest
                             }
                         }
                     }
+                }
+            }
+
+            newData.WebApiDetailsInfo.IsExpanded = oldData.WebApiDetailsInfo.IsExpanded;
+            newData.WebApiDetailsInfo.IsSelected = oldData.WebApiDetailsInfo.IsSelected;
+
+            foreach (var server in oldData.WebApiDetailsInfo.HttpControllers)
+            {
+                var findServer = newData.WebApiDetailsInfo.HttpControllers.FirstOrDefault(x => x.Url == server.Url);
+                if (findServer == null)
+                    continue;
+                findServer.IsExpanded = server.IsExpanded;
+                findServer.IsSelected = server.IsSelected;
+                foreach (var method in server.Methods)
+                {
+                    var find = (from x in findServer.Methods where x.MethodName == method.MethodName && x.Requests.First().Parameters.Count == method.Requests.First().Parameters.Count select x).FirstOrDefault();
+                    if (find != null)
+                    {
+                        find.IsExpanded = method.IsExpanded;
+                        find.IsSelected = method.IsSelected;
+                        foreach (var request in method.Requests)
+                        {
+                            var findRequest = find.Requests.FirstOrDefault(x => x.Name == request.Name);
+                            if (findRequest == null)
+                            {
+                                findRequest = request.Clone();
+                                foreach (var item in request.Parameters)
+                                {
+                                    findRequest.Parameters.Add(item.Clone());
+                                }
+                                find.Requests.Add(findRequest);
+                            }
+                            foreach (var parameter in request.Parameters)
+                            {
+                                var p = (from x in findRequest.Parameters where x.Name == parameter.Name select x).FirstOrDefault();
+                                if (p != null)
+                                {
+                                    parameter.IsExpanded = p.IsExpanded;
+                                    parameter.IsSelected = p.IsSelected;
+                                    p.IsJson = parameter.IsJson;
+                                    p.Value = parameter.Value?.ToString();
+                                    p.TemplateValue = parameter.TemplateValue?.ToString();
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
         }
@@ -273,6 +326,47 @@ namespace SignalGoTest
             //SaveData(new SignalGoTest.AppDataInfo() { ServerAddress = txtAddress.Text, Items = (ProviderDetailsInfo)TreeViewServices.DataContext, Histories = (List<HistoryCallInfo>)lstHistoryCalls.ItemsSource });
         }
 
+        //public static string CreateExceptionFromResponseErrors(HttpResponseMessage response)
+        //{
+        //    var httpErrorObject = response.Content.ReadAsStringAsync().Result;
+
+        //    // Create an anonymous object to use as the template for deserialization:
+        //    var anonymousErrorObject =
+        //        new { message = "", ModelState = new Dictionary<string, string[]>() };
+
+        //    // Deserialize:
+        //    var deserializedErrorObject =
+        //        JsonConvert.DeserializeAnonymousType(httpErrorObject, anonymousErrorObject);
+
+        //    // Now wrap into an exception which best fullfills the needs of your application:
+        //    StringBuilder result = new StringBuilder();
+        //    // Sometimes, there may be Model Errors:
+        //    if (deserializedErrorObject.ModelState != null)
+        //    {
+        //        var errors =
+        //            deserializedErrorObject.ModelState
+        //                                    .Select(kvp => string.Join(". ", kvp.Value));
+        //        for (int i = 0; i < errors.Count(); i++)
+        //        {
+        //            // Wrap the errors up into the base Exception.Data Dictionary:
+        //            result.AppendLine(i.ToString() + ": " + errors.ElementAt(i));
+        //        }
+        //    }
+        //    // Othertimes, there may not be Model Errors:
+        //    else
+        //    {
+        //        var error =
+        //            JsonConvert.DeserializeObject<Dictionary<string, string>>(httpErrorObject);
+        //        foreach (var kvp in error)
+        //        {
+        //            // Wrap the errors up into the base Exception.Data Dictionary:
+        //            result.AppendLine(kvp.Key + ": " + kvp.Value);
+        //        }
+        //    }
+        //    return result.ToString();
+        //}
+
+        string session = "";
         private void btnSend_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -283,8 +377,17 @@ namespace SignalGoTest
                 var selectedRequest = (ServiceDetailsRequestInfo)lstRequests.SelectedItem;
                 var selectedMethod = TreeViewServices.SelectedItem as ServiceDetailsMethod;
 
-                var service = (ServiceDetailsInfo)((List<object>)TreeViewServices.ItemsSource).Where(x => x.GetType() == typeof(ServiceDetailsInfo) && ((ServiceDetailsInfo)x).Services.Any(y => y.Methods.Any(j => j == selectedMethod))).FirstOrDefault();
-                var serviceName = service.ServiceName;
+                var service = (ServiceDetailsInfo)((List<object>)TreeViewServices.ItemsSource).Where(x => (x.GetType() == typeof(ServiceDetailsInfo) && ((ServiceDetailsInfo)x).Services.Any(y => y.Methods.Any(j => j == selectedMethod)))).FirstOrDefault();
+                string serviceName = "";
+                bool isHttp = false;
+                if (service != null)
+                    serviceName = service.ServiceName;
+                else
+                {
+                    isHttp = true;
+                    var httpService = (WebApiDetailsInfo)((List<object>)TreeViewServices.ItemsSource).Where(x => (x.GetType() == typeof(WebApiDetailsInfo) && ((WebApiDetailsInfo)x).HttpControllers.Any(y => y.Methods.Any(j => j == selectedMethod)))).FirstOrDefault();
+                    serviceName = httpService.HttpControllers.FirstOrDefault(x => x.Methods.Any(j => j == selectedMethod)).Url.ToLower();
+                }
                 ServiceDetailsMethod sendMethod = new ServiceDetailsMethod();
                 var sendReq = new ServiceDetailsRequestInfo();
                 sendMethod.MethodName = selectedMethod.MethodName;
@@ -296,13 +399,56 @@ namespace SignalGoTest
                         sendReq.Parameters.Add(new ServiceDetailsParameterInfo() { Name = item.Name, Type = item.Type, Value = item.IsJson ? item.Value : JsonConvert.SerializeObject(item.Value), IsJson = item.IsJson });
                     }
                 }
-                System.Threading.Tasks.Task.Factory.StartNew(() =>
+                Uri.TryCreate(txtAddress.Text, UriKind.Absolute, out Uri uri);
+                System.Threading.Tasks.Task.Factory.StartNew(async () =>
                 {
                     try
                     {
                         string request = "";
-                        var response = provider.SendRequest(serviceName, sendMethod, sendReq, out request);
-
+                        var response = "";
+                        if (!isHttp)
+                            response = provider.SendRequest(serviceName, sendMethod, sendReq, out request);
+                        else
+                        {
+                            var cookieContainer = new CookieContainer();
+                            using (var handler = new HttpClientHandler() { CookieContainer = cookieContainer })
+                            {
+                                using (HttpClient httpClient = new HttpClient(handler))
+                                {
+                                    if (!string.IsNullOrEmpty(session))
+                                        cookieContainer.SetCookies(uri, session);
+                                    MultipartFormDataContent form = new MultipartFormDataContent();
+                                    foreach (var item in sendReq.Parameters)
+                                    {
+                                        //form.Add(new StringContent(item.Name), JsonConvert.SerializeObject(JsonConvert.DeserializeObject(item.Value.ToString()), Formatting.None));
+                                        var jsonPart = new StringContent(item.Value.ToString(), Encoding.UTF8, "application/json");
+                                        jsonPart.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+                                        jsonPart.Headers.ContentDisposition.Name = item.Name;
+                                        jsonPart.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                                        form.Add(jsonPart);
+                                    }
+                                    //if (!string.IsNullOrEmpty(session))
+                                    //    httpClient.DefaultRequestHeaders.coo.Add("Cookie", session);
+                                    HttpResponseMessage httpresponse = await httpClient.PostAsync("http://" + uri.Host + ":" + uri.Port + "/" + serviceName + "/" + sendMethod.MethodName, form);
+                                    if (!httpresponse.IsSuccessStatusCode)
+                                    {
+                                        // Unwrap the response and throw as an Api Exception:
+                                        response = httpresponse.Content.ReadAsStringAsync().Result;
+                                    }
+                                    else
+                                    {
+                                        httpresponse.EnsureSuccessStatusCode();
+                                        HttpHeaders headers = httpresponse.Headers;
+                                        IEnumerable<string> values;
+                                        if (headers.TryGetValues("Set-Cookie", out values))
+                                        {
+                                            session = values.First();
+                                        }
+                                        response = httpresponse.Content.ReadAsStringAsync().Result;
+                                    }
+                                }
+                            }
+                        }
                         Dispatcher.Invoke(new Action(() =>
                         {
                             var history = (List<HistoryCallInfo>)lstHistoryCalls.ItemsSource;
@@ -314,6 +460,13 @@ namespace SignalGoTest
                             lstHistoryCalls.ItemsSource = history;
                             txtReponse.Text = response;
                             btnSave_Click(null, null);
+                        }));
+                    }
+                    catch (System.Net.Http.HttpRequestException ex)
+                    {
+                        Dispatcher.Invoke(new Action(() =>
+                        {
+                            txtReponse.Text = ex.Message;
                         }));
                     }
                     catch (Exception ex)
@@ -350,8 +503,16 @@ namespace SignalGoTest
 
                 btn.IsEnabled = false;
                 var method = (ServiceDetailsMethod)TreeViewServices.SelectedItem;
-                var service = (ServiceDetailsInfo)((List<object>)TreeViewServices.ItemsSource).Where(x => x.GetType() == typeof(ServiceDetailsInfo) && ((ServiceDetailsInfo)x).Services.Any(y => y.Methods.Any(j => j == method))).FirstOrDefault();
-                var serviceName = service.ServiceName;
+                var service = (ServiceDetailsInfo)((List<object>)TreeViewServices.ItemsSource).Where(x => (x.GetType() == typeof(ServiceDetailsInfo) && ((ServiceDetailsInfo)x).Services.Any(y => y.Methods.Any(j => j == method)))).FirstOrDefault();
+                string serviceName = "";
+                if (service != null)
+                    serviceName = service.ServiceName;
+                else
+                {
+                    var httpService = (WebApiDetailsInfo)((List<object>)TreeViewServices.ItemsSource).Where(x => (x.GetType() == typeof(WebApiDetailsInfo) && ((WebApiDetailsInfo)x).HttpControllers.Any(y => y.Methods.Any(j => j == method)))).FirstOrDefault();
+                    serviceName = httpService.HttpControllers.FirstOrDefault(x => x.Methods.Any(j => j == method)).Url.ToLower();
+                }
+
                 var parameter = (ServiceDetailsParameterInfo)btn.DataContext;
                 var paramIndex = method.Requests.First().Parameters.IndexOf(parameter);
                 MethodParameterDetails sendReq = new MethodParameterDetails();
@@ -413,8 +574,17 @@ namespace SignalGoTest
 
         private static string FormatJson(string json)
         {
-            dynamic parsedJson = JsonConvert.DeserializeObject(json);
-            return JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
+            try
+            {
+                dynamic parsedJson = JsonConvert.DeserializeObject(json);
+                if (parsedJson == null)
+                    return json;
+                return JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
+            }
+            catch (Exception ex)
+            {
+                return json;
+            }
         }
 
         private void btnToString_Click(object sender, RoutedEventArgs e)
@@ -887,6 +1057,24 @@ namespace SignalGoTest
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void DeleteRequest_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var parent = (ServiceDetailsMethod)TreeViewServices.SelectedItem;
+                var item = (ServiceDetailsRequestInfo)((MenuItem)sender).DataContext;
+                if (item.Name == "Default")
+                    return;
+                parent.Requests.Remove(item);
+                btnSave_Click(null, null);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
         }
     }
 }
