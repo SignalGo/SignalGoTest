@@ -172,7 +172,7 @@
                                     <TextBox x:Name="newRequestName" Text=""/>
                                     <Button x:Name="btnAddRequest" Click="btnAddRequest_Click" Content="Add" Grid.Column="1" Padding="10,0,10,0"/>
                                 </Grid>
-                                <ListBox x:Name="lstRequests" Grid.Row="1" ItemsSource="{Binding SelectedItem.Requests,ElementName=TreeViewServices}" DisplayMemberPath="Name">
+                                <ListBox x:Name="lstRequests" Grid.Row="1" SelectionChanged="lstRequests_SelectionChanged" ItemsSource="{Binding SelectedItem.Requests,ElementName=TreeViewServices}" DisplayMemberPath="Name">
                                     <ListBox.ItemContainerStyle>
                                         <Style TargetType="{x:Type ListBoxItem}">
                                             <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
@@ -448,7 +448,16 @@
                                                 </DataGridTextColumn>
                                             </DataGrid.Columns>
                                         </DataGrid>
-                                        <Button x:Name="btnSend" Click="btnSend_Click" Content="Send" Height="23" Padding="10,0,10,0" Margin="0,5,0,0" Grid.Row="2"/>
+                                        <Grid Grid.Row="2" Height="23">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition Width="auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button x:Name="btnSend" Click="btnSend_Click" Content="Send" Padding="10,0,10,0" Margin="0,5,0,0" />
+                                            <Button Grid.Column="1" x:Name="btnAttachment" Click="btnAttachment_Click" Content="Attach File (0)" Padding="10,0,10,0" Margin="10,5,0,0" />
+                                            <Button Grid.Column="2" x:Name="btnRemoveAttachment" Click="btnRemoveAttachment_Click" Content="Remove Attachment" Padding="10,0,10,0" Margin="10,5,0,0" />
+                                        </Grid>
                                         <TextBlock Text="Response Json:" Margin="0,5,0,0" Grid.Row="3"/>
                                         <TextBox x:Name="txtReponse" VerticalScrollBarVisibility="Auto" Margin="0,5,0,0" AcceptsReturn="True" TextWrapping="Wrap" Grid.Row="4"/>
                                         <Button x:Name="btnToString" Click="btnToString_Click" Content="ToString" Height="23" Padding="10,0,10,0" Margin="0,5,0,0" Grid.Row="5"/>

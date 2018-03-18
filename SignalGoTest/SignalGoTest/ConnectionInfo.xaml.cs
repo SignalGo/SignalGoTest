@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using SignalGo.Client;
 using SignalGo.Shared;
 using SignalGo.Shared.Models;
@@ -109,7 +110,7 @@ namespace SignalGoTest
                             {
                                 busyIndicator.BusyContent = $"RegisterService {item.ServiceName}...";
                             });
-                            provider.RegisterClientServiceInterface(item.ServiceName);
+                            provider.RegisterServerService(item.ServiceName);
                         }
                     }
                     AsyncActions.RunOnUI(() =>
@@ -197,17 +198,43 @@ namespace SignalGoTest
                             {
                                 var findRequest = find.Requests.FirstOrDefault(x => x.Name == request.Name);
                                 if (findRequest == null)
-                                    continue;
-                                foreach (var parameter in request.Parameters)
                                 {
-                                    var p = (from x in findRequest.Parameters where x.Name == parameter.Name select x).FirstOrDefault();
-                                    if (p != null)
+                                    var clonedReq = request.Clone();
+                                    var defRequest = find.Requests.FirstOrDefault();
+                                    foreach (var parameter in request.Parameters)
                                     {
-                                        parameter.IsExpanded = p.IsExpanded;
-                                        parameter.IsSelected = p.IsSelected;
-                                        p.IsJson = parameter.IsJson;
-                                        p.Value = parameter.Value?.ToString();
-                                        p.TemplateValue = parameter.TemplateValue?.ToString();
+                                        var p = (from x in defRequest.Parameters where x.Name == parameter.Name select x).FirstOrDefault();
+                                        if (p != null)
+                                        {
+                                            //p.IsExpanded = parameter.IsExpanded;
+                                            //p.IsJson = parameter.IsJson;
+                                            //p.IsSelected = parameter.IsSelected;
+                                            //p.TemplateValue = parameter.TemplateValue;
+                                            //p.Value = parameter.Value;
+                                            parameter.Type = p.Type;
+                                            parameter.FullTypeName = p.FullTypeName;
+                                            parameter.Comment = p.Comment;
+                                            clonedReq.Parameters.Add(parameter.Clone());
+                                        }
+                                    }
+                                    find.Requests.Add(clonedReq);
+                                }
+                                else
+                                {
+                                    foreach (var parameter in request.Parameters)
+                                    {
+                                        var p = (from x in findRequest.Parameters where x.Name == parameter.Name select x).FirstOrDefault();
+                                        if (p != null)
+                                        {
+                                            parameter.IsExpanded = p.IsExpanded;
+                                            parameter.IsSelected = p.IsSelected;
+                                            p.IsJson = parameter.IsJson;
+                                            p.Value = parameter.Value?.ToString();
+                                            p.TemplateValue = parameter.TemplateValue?.ToString();
+                                            p.Type = parameter.Type;
+                                            p.FullTypeName = parameter.FullTypeName;
+                                            p.Comment = parameter.Comment;
+                                        }
                                     }
                                 }
                             }
@@ -427,6 +454,15 @@ namespace SignalGoTest
                                         jsonPart.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                                         form.Add(jsonPart);
                                     }
+                                    if (!string.IsNullOrEmpty(attachmentFile) && File.Exists(attachmentFile))
+                                    {
+                                        var byteFile = new ByteArrayContent(File.ReadAllBytes(attachmentFile));
+                                        byteFile.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                                        {
+                                            FileName = System.IO.Path.GetFileName(attachmentFile)
+                                        };
+                                        form.Add(byteFile);
+                                    }
                                     //if (!string.IsNullOrEmpty(session))
                                     //    httpClient.DefaultRequestHeaders.coo.Add("Cookie", session);
                                     HttpResponseMessage httpresponse = await httpClient.PostAsync("http://" + uri.Host + ":" + uri.Port + "/" + serviceName + "/" + sendMethod.MethodName, form);
@@ -444,7 +480,28 @@ namespace SignalGoTest
                                         {
                                             session = values.First();
                                         }
-                                        response = httpresponse.Content.ReadAsStringAsync().Result;
+                                        headers = httpresponse.Content.Headers;
+                                        if (headers.TryGetValues("content-disposition", out values))
+                                        {
+                                            var dispo = ContentDispositionHeaderValue.Parse(values.First());
+                                            var fileName = dispo.FileName;
+                                            response = fileName;
+                                            var bytes = httpresponse.Content.ReadAsByteArrayAsync().Result;
+                                            response += Environment.NewLine + "length:" + bytes.Length;
+                                            Dispatcher.Invoke(new Action(() =>
+                                            {
+                                                SaveFileDialog dialog = new SaveFileDialog();
+                                                dialog.FileName = fileName;
+                                                if ((bool)dialog.ShowDialog())
+                                                {
+                                                    File.WriteAllBytes(dialog.FileName, bytes);
+                                                }
+                                            }));
+                                        }
+                                        else
+                                        {
+                                            response = httpresponse.Content.ReadAsStringAsync().Result;
+                                        }
                                     }
                                 }
                             }
@@ -928,6 +985,7 @@ namespace SignalGoTest
                 foreach (var item in fullItems)
                 {
                     ServiceDetailsInfo cloneServiceDetailsInfo = null;
+                    WebApiDetailsInfo cloneWebApiDetailsInfo = null;
                     ProjectDomainDetailsInfo cloneProjectDomainDetailsInfo = null;
                     bool canAdd = false;
                     if (item.GetType() == typeof(ServiceDetailsInfo))
@@ -1017,6 +1075,44 @@ namespace SignalGoTest
                         if (canAdd)
                             newItems.Add(cloneCallbackServiceDetailsInfo);
                     }
+                    else if (item.GetType() == typeof(WebApiDetailsInfo))
+                    {
+                        var result = (WebApiDetailsInfo)item;
+                        cloneWebApiDetailsInfo = result.Clone();
+
+                        foreach (var service in result.HttpControllers)
+                        {
+                            var cloneService = service.Clone();
+                            foreach (var method in service.Methods)
+                            {
+                                if (method.MethodName.ToLower().Contains(value))
+                                {
+                                    if (!cloneWebApiDetailsInfo.HttpControllers.Contains(cloneService))
+                                        cloneWebApiDetailsInfo.HttpControllers.Add(cloneService);
+                                    cloneService.Methods.Add(method);
+                                    canAdd = true;
+                                    continue;
+                                }
+
+                                foreach (var request in method.Requests)
+                                {
+                                    foreach (var p in request.Parameters)
+                                    {
+                                        if (p.Name.ToLower().Contains(value))
+                                        {
+                                            if (!cloneWebApiDetailsInfo.HttpControllers.Contains(cloneService))
+                                                cloneWebApiDetailsInfo.HttpControllers.Add(cloneService);
+                                            cloneService.Methods.Add(method);
+                                            canAdd = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (canAdd)
+                            newItems.Add(cloneWebApiDetailsInfo);
+                    }
                 }
                 TreeViewServices.ItemsSource = newItems;
             }
@@ -1024,7 +1120,7 @@ namespace SignalGoTest
 
         private void TreeViewServices_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            //SaveTreeViewSelectedItem();
+            btnRemoveAttachment_Click(null, null);
         }
 
         private void btnAddRequest_Click(object sender, RoutedEventArgs e)
@@ -1075,6 +1171,28 @@ namespace SignalGoTest
                 MessageBox.Show(ex.Message);
             }
 
+        }
+
+        string attachmentFile = null;
+        private void btnAttachment_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            if ((bool)dialog.ShowDialog())
+            {
+                attachmentFile = dialog.FileName;
+                btnAttachment.Content = "Attach File (1)";
+            }
+        }
+
+        private void btnRemoveAttachment_Click(object sender, RoutedEventArgs e)
+        {
+            attachmentFile = null;
+            btnAttachment.Content = "Attach File (0)";
+        }
+
+        private void lstRequests_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            btnRemoveAttachment_Click(null, null);
         }
     }
 }
