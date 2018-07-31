@@ -41,6 +41,8 @@ namespace SignalGoTest
         }
 
         List<object> fullItems { get; set; }
+        //object _oldSelectedItem = null;
+        //object _newSelectedItem = null;
 
         ClientProvider provider = new ClientProvider();
         private void btnconnect_Click(object sender, RoutedEventArgs e)
@@ -48,6 +50,9 @@ namespace SignalGoTest
             busyIndicator.BusyContent = "Connecting...";
             busyIndicator.IsBusy = true;
             string address = txtAddress.Text;
+            string search = txtSearch.Text;
+            // _oldSelectedItem = TreeViewServices.SelectedItem;
+            SaveTreeViewSelectedItem();
             AsyncActions.Run(() =>
             {
                 try
@@ -131,6 +136,12 @@ namespace SignalGoTest
                         MainWindow.SaveData();
                         busyIndicator.IsBusy = false;
                     });
+                    if (!string.IsNullOrEmpty(search))
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            TextBox_TextChanged(txtSearch, null);
+                            SelectTreeViewOldItem();
+                        }));
                     //SelectTreeViewOldItem();
                     //SaveData(new SignalGoTest.AppDataInfo() { ServerAddress = txtAddress.Text, ServiceName = txtServiceName.Text, Items = items });
                 }
@@ -175,6 +186,8 @@ namespace SignalGoTest
                 var findServer = newData.Services.FirstOrDefault(x => x.FullNameSpace == server.FullNameSpace);
                 if (findServer == null)
                     continue;
+                //if (_oldSelectedItem == server)
+                //    _newSelectedItem = findServer;
                 findServer.IsExpanded = server.IsExpanded;
                 findServer.IsSelected = server.IsSelected;
                 foreach (var service in server.Services)
@@ -184,7 +197,10 @@ namespace SignalGoTest
                     {
                         findService.IsExpanded = service.IsExpanded;
                         findService.IsSelected = service.IsSelected;
+                        //if (_oldSelectedItem == service)
+                        //    _newSelectedItem = findService;
                     }
+
                     foreach (var method in service.Methods)
                     {
                         if (findService == null)
@@ -192,6 +208,8 @@ namespace SignalGoTest
                         var find = (from x in findService.Methods where x.MethodName == method.MethodName && x.Requests.First().Parameters.Count == method.Requests.First().Parameters.Count select x).FirstOrDefault();
                         if (find != null)
                         {
+                            //if (_oldSelectedItem == method)
+                            //    _newSelectedItem = find;
                             find.IsExpanded = method.IsExpanded;
                             find.IsSelected = method.IsSelected;
                             foreach (var request in method.Requests)
@@ -206,6 +224,8 @@ namespace SignalGoTest
                                         var p = (from x in defRequest.Parameters where x.Name == parameter.Name select x).FirstOrDefault();
                                         if (p != null)
                                         {
+                                            //if (_oldSelectedItem == parameter)
+                                            //    _newSelectedItem = p;
                                             //p.IsExpanded = parameter.IsExpanded;
                                             //p.IsJson = parameter.IsJson;
                                             //p.IsSelected = parameter.IsSelected;
@@ -226,6 +246,8 @@ namespace SignalGoTest
                                         var p = (from x in findRequest.Parameters where x.Name == parameter.Name select x).FirstOrDefault();
                                         if (p != null)
                                         {
+                                            //if (_oldSelectedItem == parameter)
+                                            //    _newSelectedItem = p;
                                             parameter.IsExpanded = p.IsExpanded;
                                             parameter.IsSelected = p.IsSelected;
                                             p.IsJson = parameter.IsJson;
@@ -511,7 +533,7 @@ namespace SignalGoTest
                             var history = (List<HistoryCallInfo>)lstHistoryCalls.ItemsSource;
                             if (history == null)
                                 history = new List<SignalGoTest.HistoryCallInfo>();
-                            response = response == null ? "void ok" : FormatJson(response);
+                            response = response == null ? "Sent success but result is null" : FormatJson(response);
                             history.Insert(0, new HistoryCallInfo() { CallDateTime = DateTime.Now, MethodName = sendMethod.MethodName, Request = FormatJson(request), Response = response });
                             lstHistoryCalls.ItemsSource = null;
                             lstHistoryCalls.ItemsSource = history;
@@ -658,6 +680,7 @@ namespace SignalGoTest
 
         Type SelectedItemType { get; set; }
         object SelectedItem { get; set; }
+        int RequestListSelectedIndex { get; set; } = 0;
         string SelectedUniqName { get; set; }
         /// <summary>
         /// Recursively search for an item in this subtree.
@@ -893,6 +916,7 @@ namespace SignalGoTest
         {
             if (TreeViewServices.SelectedItem == null)
                 return;
+            RequestListSelectedIndex = lstRequests.SelectedIndex;
             SelectedItem = TreeViewServices.SelectedItem;
             if (SelectedItem == null)
                 SelectedItemType = null;
@@ -1192,7 +1216,19 @@ namespace SignalGoTest
 
         private void lstRequests_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (RequestListSelectedIndex != -1 && lstRequests.SelectedIndex == -1)
+            {
+                e.Handled = true;
+                lstRequests.SelectedIndex = RequestListSelectedIndex;
+                //if (lstRequests.SelectedIndex == RequestListSelectedIndex)
+                //{
+                //    //RequestListSelectedIndex = -1;
+                //}
+                return;
+            }
             btnRemoveAttachment_Click(null, null);
         }
+        
+
     }
 }

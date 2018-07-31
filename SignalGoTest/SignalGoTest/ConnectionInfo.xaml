@@ -172,10 +172,10 @@
                                     <TextBox x:Name="newRequestName" Text=""/>
                                     <Button x:Name="btnAddRequest" Click="btnAddRequest_Click" Content="Add" Grid.Column="1" Padding="10,0,10,0"/>
                                 </Grid>
-                                <ListBox x:Name="lstRequests" Grid.Row="1" SelectionChanged="lstRequests_SelectionChanged" ItemsSource="{Binding SelectedItem.Requests,ElementName=TreeViewServices}" DisplayMemberPath="Name">
+                                <ListBox x:Name="lstRequests" Grid.Row="1" SelectedIndex="0" SelectionChanged="lstRequests_SelectionChanged" ItemsSource="{Binding SelectedItem.Requests,ElementName=TreeViewServices}" DisplayMemberPath="Name">
                                     <ListBox.ItemContainerStyle>
                                         <Style TargetType="{x:Type ListBoxItem}">
-                                            <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                                            <!--<Setter Property="IsSelected" Value="{Binding IsSelected}"/>-->
                                             <Setter Property="ContextMenu">
                                                 <Setter.Value>
                                                     <ContextMenu>
