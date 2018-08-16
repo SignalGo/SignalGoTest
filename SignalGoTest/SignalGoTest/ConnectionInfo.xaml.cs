@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using SignalGo.Client;
+using SignalGo.Client.ClientManager;
 using SignalGo.Shared;
 using SignalGo.Shared.Models;
 using System;
@@ -77,13 +78,13 @@ namespace SignalGoTest
                                     findService = details.CallbackCalls.FirstOrDefault(x => x.ServiceName == callInfo.ServiceName);
                                 }
                                 var logInfo = new CallbackMethodLogInfo() { DateTime = DateTime.Now, MethodName = callInfo.MethodName };
-                                var findFromBase = details.Items.Callbacks.FirstOrDefault(x => x.ServiceName == callInfo.ServiceName).Methods.FirstOrDefault(x => x.MethodName == callInfo.MethodName && x.Requests.First().Parameters.Count == callInfo.Parameters.Count);
+                                var findFromBase = details.Items.Callbacks.FirstOrDefault(x => x.ServiceName == callInfo.ServiceName).Methods.FirstOrDefault(x => x.MethodName == callInfo.MethodName && x.Requests.First().Parameters.Count == callInfo.Parameters.Length);
 
                                 foreach (var item in callInfo.Parameters)
                                 {
                                     var token = Newtonsoft.Json.Linq.JToken.Parse(item.Value);
                                     string value = token.ToString(Newtonsoft.Json.Formatting.Indented);
-                                    var findedParam = findFromBase.Requests.First().Parameters[callInfo.Parameters.IndexOf(item)];
+                                    var findedParam = findFromBase.Requests.First().Parameters[Array.IndexOf(callInfo.Parameters, item)];
                                     logInfo.Parameters.Add(new CallbackParameterLogInfo() { Value = value, Name = findedParam.Name, ParameterType = findedParam.Type });
                                 }
 
@@ -658,6 +659,8 @@ namespace SignalGoTest
                 dynamic parsedJson = JsonConvert.DeserializeObject(json);
                 if (parsedJson == null)
                     return json;
+                else if (parsedJson is string)
+                    parsedJson = JsonConvert.DeserializeObject(parsedJson);
                 return JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
             }
             catch (Exception ex)
@@ -1228,7 +1231,7 @@ namespace SignalGoTest
             }
             btnRemoveAttachment_Click(null, null);
         }
-        
+
 
     }
 }
