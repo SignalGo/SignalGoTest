@@ -48,6 +48,7 @@ namespace SignalGoTest
         ClientProvider provider = new ClientProvider();
         private void btnconnect_Click(object sender, RoutedEventArgs e)
         {
+            btnSend.IsEnabled = true;
             busyIndicator.BusyContent = "Connecting...";
             busyIndicator.IsBusy = true;
             string address = txtAddress.Text;
@@ -108,17 +109,17 @@ namespace SignalGoTest
                     var result = provider.GetListOfServicesWithDetials(address);
                     DoOrder(result);
                     result.ProjectDomainDetailsInfo.Models = result.ProjectDomainDetailsInfo.Models.OrderBy(x => x.Name).ToList();
-                    if (result.Services.Count > 0)
-                    {
-                        foreach (var item in result.Services)
-                        {
-                            AsyncActions.RunOnUI(() =>
-                            {
-                                busyIndicator.BusyContent = $"RegisterService {item.ServiceName}...";
-                            });
-                            provider.RegisterServerService(item.ServiceName);
-                        }
-                    }
+                    //if (result.Services.Count > 0)
+                    //{
+                    //    foreach (var item in result.Services)
+                    //    {
+                    //        AsyncActions.RunOnUI(() =>
+                    //        {
+                    //            busyIndicator.BusyContent = $"RegisterService {item.ServiceName}...";
+                    //        });
+                    //        provider.RegisterServerService(item.ServiceName);
+                    //    }
+                    //}
                     AsyncActions.RunOnUI(() =>
                     {
                         var connectionData = (ConnectionData)this.DataContext;
@@ -661,7 +662,12 @@ namespace SignalGoTest
                     return json;
                 else if (parsedJson is string)
                     parsedJson = JsonConvert.DeserializeObject(parsedJson);
-                return JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
+                if (parsedJson == null)
+                    return json;
+                var result =  JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
+                if (result == null)
+                    return json;
+                return result;
             }
             catch (Exception ex)
             {
