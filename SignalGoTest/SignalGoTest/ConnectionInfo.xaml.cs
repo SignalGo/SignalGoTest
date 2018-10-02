@@ -14,6 +14,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -106,43 +107,7 @@ namespace SignalGoTest
                         btndisconnect.IsEnabled = true;
                     });
                     ProviderDetailsInfo result = await provider.GetListOfServicesWithDetials(address);
-                    DoOrder(result);
-                    result.ProjectDomainDetailsInfo.Models = result.ProjectDomainDetailsInfo.Models.OrderBy(x => x.Name).ToList();
-                    //if (result.Services.Count > 0)
-                    //{
-                    //    foreach (var item in result.Services)
-                    //    {
-                    //        AsyncActions.RunOnUI(() =>
-                    //        {
-                    //            busyIndicator.BusyContent = $"RegisterService {item.ServiceName}...";
-                    //        });
-                    //        provider.RegisterServerService(item.ServiceName);
-                    //    }
-                    //}
-                    AsyncActions.RunOnUI(() =>
-                    {
-                        ConnectionData connectionData = (ConnectionData)DataContext;
-                        connectionData.Items = result;
-                        UpdateData((ProviderDetailsInfo)TreeViewServices.DataContext, result);
-                        result.ProjectDomainDetailsInfo.Models = result.ProjectDomainDetailsInfo.Models.OrderBy(x => x.ObjectType).ToList();
-                        TreeViewServices.DataContext = result;
-                        List<object> items = new List<object>();
-                        items.AddRange(result.Services);
-                        items.AddRange(result.Callbacks);
-                        items.Add(result.WebApiDetailsInfo);
-                        items.Add(result.ProjectDomainDetailsInfo);
-                        TreeViewServices.ItemsSource = null;
-                        TreeViewServices.ItemsSource = items;
-                        fullItems = items;
-                        MainWindow.SaveData();
-                        busyIndicator.IsBusy = false;
-                    });
-                    if (!string.IsNullOrEmpty(search))
-                        await Dispatcher.BeginInvoke(new Action(() =>
-                        {
-                            TextBox_TextChanged(txtSearch, null);
-                            SelectTreeViewOldItem();
-                        }));
+                    await CalculateDetails(result, search);
                     //SelectTreeViewOldItem();
                     //SaveData(new SignalGoTest.AppDataInfo() { ServerAddress = txtAddress.Text, ServiceName = txtServiceName.Text, Items = items });
                 }
@@ -153,12 +118,53 @@ namespace SignalGoTest
                         provider.Disconnect();
                         btnconnect.IsEnabled = true;
                         btndisconnect.IsEnabled = false;
-                        MessageBox.Show(ex.Message);
+                        MessageBox.Show(ex.Message, "error", MessageBoxButton.OK, MessageBoxImage.Error);
                         busyIndicator.IsBusy = false;
                     });
                 }
             });
 
+        }
+
+        public async Task CalculateDetails(ProviderDetailsInfo result, string search)
+        {
+            DoOrder(result);
+            result.ProjectDomainDetailsInfo.Models = result.ProjectDomainDetailsInfo.Models.OrderBy(x => x.Name).ToList();
+            //if (result.Services.Count > 0)
+            //{
+            //    foreach (var item in result.Services)
+            //    {
+            //        AsyncActions.RunOnUI(() =>
+            //        {
+            //            busyIndicator.BusyContent = $"RegisterService {item.ServiceName}...";
+            //        });
+            //        provider.RegisterServerService(item.ServiceName);
+            //    }
+            //}
+            AsyncActions.RunOnUI(() =>
+            {
+                ConnectionData connectionData = (ConnectionData)DataContext;
+                connectionData.Items = result;
+                UpdateData((ProviderDetailsInfo)TreeViewServices.DataContext, result);
+                result.ProjectDomainDetailsInfo.Models = result.ProjectDomainDetailsInfo.Models.OrderBy(x => x.ObjectType).ToList();
+                TreeViewServices.DataContext = result;
+                List<object> items = new List<object>();
+                items.AddRange(result.Services);
+                items.AddRange(result.Callbacks);
+                items.Add(result.WebApiDetailsInfo);
+                items.Add(result.ProjectDomainDetailsInfo);
+                TreeViewServices.ItemsSource = null;
+                TreeViewServices.ItemsSource = items;
+                fullItems = items;
+                MainWindow.SaveData();
+                busyIndicator.IsBusy = false;
+            });
+            if (!string.IsNullOrEmpty(search))
+                await Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    TextBox_TextChanged(txtSearch, null);
+                    SelectTreeViewOldItem();
+                }));
         }
 
 
@@ -361,11 +367,11 @@ namespace SignalGoTest
             bool canDisconnect = false;
             Dispatcher.Invoke(new Action(() =>
             {
-                canDisconnect = !btnconnect.IsEnabled;
+                canDisconnect = btnconnect.IsEnabled;
                 btndisconnect.IsEnabled = false;
                 btnconnect.IsEnabled = true;
             }));
-            
+
             if (provider != null && canDisconnect)
             {
                 provider.Disconnect();
@@ -607,11 +613,21 @@ namespace SignalGoTest
                 sendReq.ServiceName = serviceName;
                 sendReq.ParameterIndex = paramIndex;
                 sendReq.IsFull = isFull;
+                string address = txtAddress.Text;
                 System.Threading.Tasks.Task.Factory.StartNew(async () =>
                 {
                     try
                     {
-                        string response = await provider.GetMethodParameterDetial(sendReq);
+                        string response = "";
+                        if (provider.IsConnected)
+                            response = await provider.GetMethodParameterDetial(sendReq);
+                        else
+                        {
+                            WebClient webClient = new WebClient();
+                            webClient.Headers.Add("signalgo-servicedetail", "parameter");
+                            response = webClient.UploadString(address, ClientSerializationHelper.SerializeObject(sendReq));
+                        }
+
                         Dispatcher.Invoke(new Action(() =>
                         {
                             try
@@ -1243,6 +1259,36 @@ namespace SignalGoTest
             btnRemoveAttachment_Click(null, null);
         }
 
-
+        private void btnHtttpUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            busyIndicator.BusyContent = "Updating...";
+            busyIndicator.IsBusy = true;
+            string search = txtSearch.Text;
+            string address = txtAddress.Text;
+            AsyncActions.Run(async () =>
+            {
+                try
+                {
+                    WebClient webClient = new WebClient();
+                    webClient.Headers.Add("signalgo-servicedetail", "");
+                    string data = webClient.UploadString(address, "");
+                    ProviderDetailsInfo result = ClientSerializationHelper.DeserializeObject<ProviderDetailsInfo>(data);
+                    await CalculateDetails(result, search);
+                    AsyncActions.RunOnUI(() =>
+                    {
+                        MessageBox.Show("success", "ok", MessageBoxButton.OK, MessageBoxImage.Information);
+                        busyIndicator.IsBusy = false;
+                    });
+                }
+                catch (Exception ex)
+                {
+                    AsyncActions.RunOnUI(() =>
+                    {
+                        MessageBox.Show(ex.Message, "error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        busyIndicator.IsBusy = false;
+                    });
+                }
+            });
+        }
     }
 }
