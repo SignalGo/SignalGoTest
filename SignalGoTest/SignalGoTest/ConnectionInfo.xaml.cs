@@ -367,12 +367,12 @@ namespace SignalGoTest
             bool canDisconnect = false;
             Dispatcher.Invoke(new Action(() =>
             {
-                canDisconnect = btnconnect.IsEnabled;
+                canDisconnect = btndisconnect.IsEnabled;
                 btndisconnect.IsEnabled = false;
                 btnconnect.IsEnabled = true;
             }));
 
-            if (provider != null && canDisconnect)
+            if (provider != null && provider.IsConnected)
             {
                 provider.Disconnect();
             }
