@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SignalGo.Client;
 using SignalGo.Client.ClientManager;
 using SignalGo.Shared;
@@ -475,7 +476,7 @@ namespace SignalGoTest
                             CookieContainer cookieContainer = new CookieContainer();
                             using (HttpClientHandler handler = new HttpClientHandler() { CookieContainer = cookieContainer })
                             {
-                                using (HttpClient httpClient = new HttpClient(handler))
+                                using (var httpClient = new System.Net.Http.HttpClient(handler))
                                 {
                                     if (!string.IsNullOrEmpty(session))
                                         cookieContainer.SetCookies(uri, session);
@@ -551,6 +552,7 @@ namespace SignalGoTest
                             lstHistoryCalls.ItemsSource = null;
                             lstHistoryCalls.ItemsSource = history;
                             txtReponse.Text = response;
+                            ShowInTreeView(response, false);
                             btnSave_Click(null, null);
                         }));
                     }
@@ -559,6 +561,7 @@ namespace SignalGoTest
                         Dispatcher.Invoke(new Action(() =>
                         {
                             txtReponse.Text = ex.Message;
+                            ShowInTreeView(ex.Message, true);
                         }));
                     }
                     catch (Exception ex)
@@ -566,6 +569,7 @@ namespace SignalGoTest
                         Dispatcher.Invoke(new Action(() =>
                         {
                             txtReponse.Text = ex.Message + Environment.NewLine + ex.StackTrace;
+                            ShowInTreeView(ex.Message, true);
                         }));
                     }
                     Dispatcher.Invoke(new Action(() =>
@@ -578,6 +582,27 @@ namespace SignalGoTest
             {
                 MessageBox.Show("error", ex.Message);
                 btnSend.IsEnabled = true;
+            }
+        }
+
+        void ShowInTreeView(string json,bool isException)
+        {
+            if (isException)
+            {
+                rawDataTab.IsSelected = true;
+            }
+            else
+            {
+                var token = JToken.Parse(json);
+
+                var children = new List<JToken>();
+                if (token != null)
+                {
+                    children.Add(token);
+                }
+
+                jsonDataTreeView.ItemsSource = null;
+                jsonDataTreeView.ItemsSource = children;
             }
         }
 
@@ -1270,8 +1295,11 @@ namespace SignalGoTest
                 try
                 {
                     WebClient webClient = new WebClient();
-                    webClient.Headers.Add("signalgo-servicedetail", "");
-                    string data = webClient.UploadString(address, "");
+                    webClient.Encoding = Encoding.UTF8;
+                    webClient.Headers.Add("signalgo-servicedetail", "full");
+                    webClient.Headers.Add(HttpRequestHeader.UserAgent, "signalgo test");
+
+                    string data = webClient.UploadString(address, "test");
                     ProviderDetailsInfo result = ClientSerializationHelper.DeserializeObject<ProviderDetailsInfo>(data);
                     await CalculateDetails(result, search);
                     AsyncActions.RunOnUI(() =>

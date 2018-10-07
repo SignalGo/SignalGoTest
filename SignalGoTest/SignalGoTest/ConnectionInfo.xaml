@@ -7,6 +7,9 @@
              xmlns:controls="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:self="clr-namespace:SignalGo.Shared.Models;assembly=SignalGo.Shared"
              xmlns:types="clr-namespace:SignalGo.Shared.Helpers;assembly=SignalGo.Shared"
+			 xmlns:json ="clr-namespace:Newtonsoft.Json;assembly=Newtonsoft.Json"
+			 xmlns:jlinq ="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
+			 xmlns:converters="clr-namespace:SignalGoTest.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="1000" d:DesignWidth="1000">
     <controls:BusyIndicator x:Name="busyIndicator">
@@ -459,8 +462,50 @@
                                             <Button Grid.Column="1" x:Name="btnAttachment" Click="btnAttachment_Click" Content="Attach File (0)" Padding="10,0,10,0" Margin="10,5,0,0" />
                                             <Button Grid.Column="2" x:Name="btnRemoveAttachment" Click="btnRemoveAttachment_Click" Content="Remove Attachment" Padding="10,0,10,0" Margin="10,5,0,0" />
                                         </Grid>
-                                        <TextBlock Text="Response Json:" Margin="0,5,0,0" Grid.Row="3"/>
-                                        <TextBox x:Name="txtReponse" VerticalScrollBarVisibility="Auto" Margin="0,5,0,0" AcceptsReturn="True" TextWrapping="Wrap" Grid.Row="4"/>
+                                        <TextBlock Text="Response Json:" Margin="0,5,0,5" Grid.Row="3"/>
+										<TabControl  Grid.Row="4">
+											<TabItem Header="Design Data">
+												<TabItem.Resources>
+													<converters:MethodToValueConverter x:Key="MethodToValueConverter"/>
+													<HierarchicalDataTemplate DataType="{x:Type jlinq:JArray}" ItemsSource="{Binding Converter={StaticResource MethodToValueConverter}, ConverterParameter='Children'}">
+														<TextBlock Text="Array">
+														</TextBlock>
+													</HierarchicalDataTemplate>
+													<HierarchicalDataTemplate DataType="{x:Type jlinq:JProperty}" ItemsSource="{Binding Converter={StaticResource MethodToValueConverter}, ConverterParameter='Children'}">
+														<StackPanel Orientation="Horizontal">
+															<TextBlock Text="{Binding Path=Name, Mode=OneWay}"/>
+														</StackPanel>
+													</HierarchicalDataTemplate>
+													<HierarchicalDataTemplate DataType="{x:Type jlinq:JObject}" ItemsSource="{Binding Converter={StaticResource MethodToValueConverter}, ConverterParameter='Children'}">
+														<TextBlock Text="Object">
+														</TextBlock>
+													</HierarchicalDataTemplate>
+													<HierarchicalDataTemplate DataType="{x:Type jlinq:JConstructor}" ItemsSource="{Binding Converter={StaticResource MethodToValueConverter}, ConverterParameter='Children'}">
+														<TextBlock Text="Constructor">
+														</TextBlock>
+													</HierarchicalDataTemplate>
+													<HierarchicalDataTemplate DataType="{x:Type jlinq:JRaw}" ItemsSource="{Binding Converter={StaticResource MethodToValueConverter}, ConverterParameter='Children'}">
+														<TextBlock Text="Raw">
+														</TextBlock>
+													</HierarchicalDataTemplate>
+													<DataTemplate DataType="{x:Type jlinq:JValue}">
+														<StackPanel Orientation="Horizontal">
+															<TextBlock Text="{Binding Path=Value, Mode=TwoWay}"/>
+														</StackPanel>
+													</DataTemplate>
+												</TabItem.Resources>
+												<TreeView Name="jsonDataTreeView">
+													<TreeView.ItemContainerStyle>
+														<Style TargetType="{x:Type TreeViewItem}">
+															<Setter Property="IsExpanded" Value="True" />
+														</Style>
+													</TreeView.ItemContainerStyle>
+												</TreeView>
+											</TabItem>
+											<TabItem x:Name="rawDataTab" Header="Raw Data">
+												<TextBox x:Name="txtReponse" VerticalScrollBarVisibility="Auto" Margin="0,5,0,0" AcceptsReturn="True" TextWrapping="Wrap"/>
+											</TabItem>
+										</TabControl>
                                         <Button x:Name="btnToString" Click="btnToString_Click" Content="ToString" Height="23" Padding="10,0,10,0" Margin="0,5,0,0" Grid.Row="5"/>
                                     </Grid>
                                 </TabItem>

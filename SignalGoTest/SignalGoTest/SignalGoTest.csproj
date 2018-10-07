@@ -91,6 +91,7 @@
     <Compile Include="ConnectionInfo.xaml.cs">
       <DependentUpon>ConnectionInfo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\MethodToValueConverter.cs" />
     <Compile Include="RelayCommand.cs" />
     <Page Include="ConnectionInfo.xaml">
       <Generator>MSBuild:Compile</Generator>
