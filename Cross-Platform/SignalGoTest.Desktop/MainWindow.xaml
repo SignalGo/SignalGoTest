@@ -1,0 +1,48 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:SignalGoTest.Desktop.Views"
+        xmlns:viewmodels="clr-namespace:SignalGoTest.ViewModels;assembly=SignalGoTest.ViewModels"
+        Title="SignalGoTest.Desktop">
+  <Window.DataContext>
+    <viewmodels:MainViewModel/>
+  </Window.DataContext>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <Menu>
+      <MenuItem Header="File">
+        <MenuItem x:Name="clearHistoriesMenu" Header="Clear Histories"/>
+      </MenuItem>
+    </Menu>
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <ListBox Items="{Binding CurrentAppData.Items}" SelectionChanged="lslConnections_SelectionChanged" BorderThickness="1" Name="ListConnections">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <Grid>
+              <TextBlock Text="{Binding Name}" Margin="5"/>
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+      <local:ConnectionInfoView Grid.Column="1" Name="ConnectionView" IsVisible="false"/>
+      <local:AddNewView Grid.Column="1" Name="AddNewView" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="300" />
+    </Grid>
+    <Grid VerticalAlignment="Center" Height="30" Margin="20" IsVisible="false">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="auto"/>
+      </Grid.ColumnDefinitions>
+      <TextBlock Text="Name:" VerticalAlignment="Center" />
+      <TextBox x:Name="txtTabName" Grid.Column="1" Margin="10,0,10,0"/>
+      <Button x:Name="btnAdd" Content="Add" Grid.Column="2" Padding="20,0,20,0"/>
+    </Grid>
+  </Grid>
+
+</Window>

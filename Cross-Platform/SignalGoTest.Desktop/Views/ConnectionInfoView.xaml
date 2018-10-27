@@ -1,0 +1,522 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:self="clr-namespace:SignalGo.Shared.Models;assembly=SignalGo.Shared"
+             xmlns:local="clr-namespace:SignalGoTest.Desktop.Views"
+             xmlns:conv="clr-namespace:SignalGoTest.Desktop.Converters"
+             xmlns:types="clr-namespace:SignalGo.Shared.Helpers;assembly=SignalGo.Shared"
+             xmlns:viewmodels="clr-namespace:SignalGoTest.ViewModels;assembly=SignalGoTest.ViewModels">
+  <UserControl.DataContext>
+    <viewmodels:ConnectionInfoViewModel />
+  </UserControl.DataContext>
+  <local:BusyDialogView IsBusy="{Binding IsBusy}" IsAlert="{Binding IsAlert}" Message="{Binding BusyContent}">
+    <local:BusyDialogView.Child>
+      <Grid Margin="10">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.ColumnSpan="2">
+          <TextBlock Text="Server Address:"/>
+          <TextBox x:Name="txtAddress" Text="{Binding CurrentConnectionInfo.ServerAddress}" Margin="0,5,0,0"/>
+          <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+            <Button Command="{Binding ConnectCommand}" Content="Connect" />
+            <Button x:Name="btndisconnect" Command="{Binding DisconnectCommand}" IsEnabled="False" Content="Disconncet" Margin="5,0,0,0"/>
+            <Button x:Name="btnHtttpUpdate" Content="Http Update"  Margin="5,0,0,0"/>
+            <Button x:Name="btnSave" Command="{Binding SaveCommand}" Content="Save" Margin="5,0,0,0"/>
+          </StackPanel>
+        </StackPanel>
+        <Grid Grid.Row="1" Margin="0,10,0,0">
+          <TabControl>
+            <TabItem Header="Services">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="2*"/>
+                  <ColumnDefinition Width="auto"/>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="auto"/>
+                  <ColumnDefinition Width="6*"/>
+                </Grid.ColumnDefinitions>
+                <Grid Margin="5">
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                  </Grid.RowDefinitions>
+                  <TextBox x:Name="txtSearch">
+
+                  </TextBox>
+                  <TreeView x:Name="TreeViewServices" BorderThickness="1" Background="White" Margin="0,5,0,0" DataContext="{Binding CurrentConnectionInfo}" Items="{Binding ItemsSource}" Grid.Row="1">
+                    <TreeView.DataTemplates>
+                      <TreeDataTemplate DataType="{x:Type self:ServiceDetailsInterface}" ItemsSource="{Binding Methods}">
+                        <StackPanel Orientation="Horizontal">
+                          <Image Source="resm:SignalGoTest.Desktop.Resources.Images.interfaces.png" Margin="0,0,5,0" Width="18" Height="19" />
+                          <TextBlock Text="{Binding NameSpace}" />
+                          <TextBlock Text=" [" Foreground="Blue" />
+                          <TextBlock Text="{Binding Methods.Count}" Foreground="Blue" />
+                          <TextBlock Text="]" Foreground="Blue" />
+                        </StackPanel>
+                      </TreeDataTemplate>
+                      <TreeDataTemplate DataType="{x:Type self:CallbackServiceDetailsInfo}" ItemsSource="{Binding Methods}">
+                        <StackPanel Orientation="Horizontal">
+                          <Image Source="resm:SignalGoTest.Desktop.Resources.Images.interfaces.png" Margin="0,0,5,0" Width="18" Height="19" />
+                          <TextBlock Text="{Binding NameSpace}" />
+                          <TextBlock Text=" [" Foreground="Blue" />
+                          <TextBlock Text="{Binding Methods.Count}" Foreground="Blue" />
+                          <TextBlock Text="]" Foreground="Blue" />
+                        </StackPanel>
+                      </TreeDataTemplate>
+
+                      <TreeDataTemplate DataType="{x:Type self:ServiceDetailsInfo}" ItemsSource="{Binding Services}">
+                        <StackPanel Orientation="Horizontal">
+                          <Image Source="resm:SignalGoTest.Desktop.Resources.Images.classicons.png" Margin="0,0,5,0" Width="17" Height="17"  />
+                          <TextBlock Text="{Binding ServiceName}" />
+                          <TextBlock Text=" (" Foreground="Green" />
+                          <TextBlock Text="{Binding Services.Count}" Foreground="Green" />
+                          <TextBlock Text=")" Foreground="Green" />
+                        </StackPanel>
+                      </TreeDataTemplate>
+
+                      <TreeDataTemplate DataType="{x:Type self:ServiceDetailsMethod}" ItemsSource="{Binding Requests[0].Parameters}">
+                        <StackPanel Orientation="Horizontal">
+                          <Image Source="resm:SignalGoTest.Desktop.Resources.Images.methods.png" Margin="0,0,5,0" Width="10" Height="12"/>
+                          <TextBlock Text="{Binding MethodName}" />
+                          <TextBlock Text=" (" Foreground="#FF7A0936" />
+                          <TextBlock Text="{Binding Requests[0].Parameters.Count}" Foreground="#FF7A0936" />
+                          <TextBlock Text=")" Foreground="#FF7A0936" />
+                        </StackPanel>
+                      </TreeDataTemplate>
+                      <TreeDataTemplate DataType="{x:Type self:ServiceDetailsParameterInfo}">
+                        <StackPanel Orientation="Horizontal">
+                          <Image Source="resm:SignalGoTest.Desktop.Resources.Images.parameters.png" Margin="0,0,5,0" Width="13" Height="12" />
+                          <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                      </TreeDataTemplate>
+                      <TreeDataTemplate DataType="{x:Type self:HttpControllerDetailsInfo}" ItemsSource="{Binding Methods}">
+                        <StackPanel Orientation="Horizontal">
+                          <Image Source="resm:SignalGoTest.Desktop.Resources.Images.webicons.png" Margin="0,0,5,0" Width="17" Height="17"  />
+                          <TextBlock Text="{Binding Url}" />
+                          <TextBlock Text=" (" Foreground="Green" />
+                          <TextBlock Text="{Binding Methods.Count}" Foreground="Green" />
+                          <TextBlock Text=")" Foreground="Green" />
+                        </StackPanel>
+                      </TreeDataTemplate>
+                      <TreeDataTemplate DataType="{x:Type self:WebApiDetailsInfo}" ItemsSource="{Binding HttpControllers}">
+                        <StackPanel Orientation="Horizontal">
+                          <Image Source="resm:SignalGoTest.Desktop.Resources.Images.webicons.png" Margin="0,0,5,0" Width="17" Height="17"  />
+                          <TextBlock Text="Web Controllers" />
+                        </StackPanel>
+                      </TreeDataTemplate>
+                      <TreeDataTemplate DataType="{x:Type self:ProjectDomainDetailsInfo}" ItemsSource="{Binding Models}">
+                        <StackPanel Orientation="Horizontal">
+                          <Image Source="resm:SignalGoTest.Desktop.Resources.Images.classicons.png" Margin="0,0,5,0" Width="17" Height="17"  />
+                          <TextBlock Text="Models" />
+                        </StackPanel>
+                      </TreeDataTemplate>
+                      <TreeDataTemplate DataType="{x:Type self:ModelDetailsInfo}">
+                        <StackPanel Orientation="Horizontal">
+                          <StackPanel.Resources>
+                            <conv:TypeToImageConverter x:Key="typeToImageConverter" />
+                          </StackPanel.Resources>
+                          <Image Margin="0,0,5,0" Width="17" Height="17" Source="{Binding ObjectType, Converter={StaticResource typeToImageConverter}}" >
+
+                          </Image>
+                          <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                      </TreeDataTemplate>
+                    </TreeView.DataTemplates>
+                  </TreeView>
+                </Grid>
+                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+                <Grid Grid.Column="2">
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                  </Grid.RowDefinitions>
+                  <Grid>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="*"/>
+                      <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="newRequestName" Text=""/>
+                    <Button x:Name="btnAddRequest" Content="Add" Grid.Column="1"/>
+                  </Grid>
+                  <ListBox x:Name="lstRequests" Grid.Row="1" SelectedIndex="0" Items="{Binding SelectedItem.Requests,ElementName=TreeViewServices}">
+                    <ListBox.ItemTemplate>
+                      <DataTemplate>
+                        <Grid>
+                          <TextBlock Text="{Binding Name}" Margin="5"/>
+                        </Grid>
+                      </DataTemplate>
+                    </ListBox.ItemTemplate>
+                  </ListBox>
+                </Grid>
+                <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
+                <TabControl Margin="0,5,0,0" Grid.Column="4">
+                  <TabItem Header="Information">
+                    <ContentControl Content="{Binding}" DataContext="{Binding ElementName=TreeViewServices,Path=SelectedItem}" Grid.Column="2">
+                      <ContentControl.DataTemplates>
+                        <DataTemplate DataType="{x:Type self:ServiceDetailsInfo}">
+                          <Grid>
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="*"/>
+                              <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Comment: " Margin="0,0,0,5" Foreground="Green"/>
+                            <TextBox Text="{Binding Comment,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="Green"/>
+
+                            <TextBlock Text="Service Name: " Margin="0,0,0,5" Grid.Row="1" Foreground="#FF55025C" />
+                            <TextBox Text="{Binding ServiceName,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="1" Foreground="#FF55025C"/>
+                          </Grid>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type self:CallbackServiceDetailsInfo}">
+                          <Grid>
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="*"/>
+                              <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Comment: " Margin="0,0,0,5" Foreground="Green"/>
+                            <TextBox  Text="{Binding Comment,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="Green"/>
+
+                            <TextBlock Text="Service Name: " Margin="0,0,0,5" Grid.Row="1" Foreground="#FF55025C" />
+                            <TextBox Text="{Binding ServiceName,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="1" Foreground="#FF55025C"/>
+                          </Grid>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type self:ServiceDetailsInterface}">
+                          <Grid>
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="*"/>
+                              <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Comment: " Margin="0,0,0,5" Foreground="Green"/>
+                            <TextBox Text="{Binding Comment,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="Green"/>
+
+                            <TextBlock Text="Methods Count: " Margin="0,0,0,5" Grid.Row="1" Foreground="#FF55025C" />
+                            <TextBlock Text="{Binding Methods.Count}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="1" Foreground="#FF55025C"/>
+                          </Grid>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type self:ServiceDetailsMethod}">
+                          <Grid>
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="*"/>
+                              <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Comment: " Margin="0,0,0,5" Foreground="Green"/>
+                            <TextBox Text="{Binding Comment,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="Green"/>
+
+                            <TextBlock Text="Return Comment: " Margin="0,0,0,5" Foreground="#FF2A779F" Grid.Row="1"/>
+                            <TextBox Text="{Binding ReturnComment,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="1" Foreground="#FF2A779F"/>
+
+                            <TextBlock Text="Exceptions: " Margin="0,0,0,5" Foreground="#FF6E0101" Grid.Row="2"/>
+                            <TextBox Text="{Binding ExceptionsComment,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="2" Foreground="#FF6E0101"/>
+
+                            <TextBlock Text="Method Name: " Margin="0,0,0,5" Grid.Row="3" Foreground="#FF55025C" />
+                            <TextBox  Text="{Binding MethodName,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="3" Foreground="#FF55025C"/>
+
+                            <TextBlock Text="Return Type: " Margin="0,0,0,5" Foreground="#FFCE4A00" Grid.Row="4" />
+                            <TextBox Text="{Binding ReturnType,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="4" Foreground="#FFCE4A00"/>
+
+                            <TextBlock Text="Parameters Count: " Margin="0,0,0,5" Grid.Row="5" Foreground="#FF55025C" />
+                            <TextBlock Text="{Binding Requests[0].Parameters.Count}" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="5" Foreground="#FF55025C"/>
+
+                            <TextBlock Text="Test Example: " Margin="0,0,0,5" Grid.Row="6" Foreground="#FF4722D7" />
+                            <TextBox Text="{Binding TestExample}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="6" Foreground="#FF4722D7"/>
+                          </Grid>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type self:ServiceDetailsParameterInfo}">
+                          <Grid>
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="*"/>
+                              <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Comment: " Margin="0,0,0,5" Foreground="Green"/>
+                            <TextBox  Text="{Binding Comment,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="Green"/>
+
+                            <TextBlock Text="Name: " Margin="0,0,0,5" Grid.Row="1" Foreground="#FF55025C" />
+                            <TextBox  Text="{Binding Name,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="1" Foreground="#FF55025C"/>
+
+                            <TextBlock Text="Type: " Margin="0,0,0,5" Foreground="#FFCE4A00" Grid.Row="2" />
+                            <TextBox  Text="{Binding Type,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="2" Foreground="#FFCE4A00"/>
+
+                          </Grid>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type self:WebApiDetailsInfo}">
+                          <Grid>
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="*"/>
+                              <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Web Api" Margin="0,0,0,5" Foreground="Green"/>
+
+                            <TextBlock Text="Count: " Margin="0,0,0,5" Grid.Row="1" Foreground="#FF55025C" />
+                            <TextBox Text="{Binding HttpControllers.Count,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="1" Foreground="#FF55025C"/>
+
+                          </Grid>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type self:HttpControllerDetailsInfo}">
+                          <Grid>
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="*"/>
+                              <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Url: " Margin="0,0,0,5" Foreground="#FF55025C" />
+                            <TextBox Text="{Binding Url,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="#FF55025C"/>
+
+                            <TextBlock Text="Methods: " Margin="0,0,0,5" Foreground="#FF55025C" Grid.Row="1"/>
+                            <TextBox Text="{Binding Methods.Count,Mode=OneWay}" Classes="ReadOnly" Grid.Row="1" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="#FF55025C"/>
+
+                          </Grid>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type self:ModelDetailsInfo}">
+                          <Grid>
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="*"/>
+                              <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Comment: " Margin="0,0,0,5" Foreground="Green"/>
+                            <TextBox  Text="{Binding Comment,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Foreground="Green"/>
+
+                            <TextBlock Text="Name: " Margin="0,0,0,5" Foreground="#FF2A779F" Grid.Row="1"/>
+                            <TextBox  Text="{Binding Name,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="1" Foreground="#FF2A779F"/>
+
+                            <TextBlock Text="Full Name Space: " Margin="0,0,0,5" Foreground="#FF6E0101" Grid.Row="2"/>
+                            <TextBox  Text="{Binding FullNameSpace,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="2" Foreground="#FF6E0101"/>
+
+                            <TextBlock Text="Test Example: " Margin="0,0,0,5" Grid.Row="3" Foreground="#FF55025C" />
+                            <TextBox Text="{Binding JsonTemplate,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="3" Foreground="#FF55025C"/>
+                          </Grid>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type self:ProjectDomainDetailsInfo}">
+                          <Grid>
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="*"/>
+                              <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                              <RowDefinition Height="auto"/>
+                              <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Project Models" Margin="0,0,0,5" Foreground="Green"/>
+
+                            <TextBlock Text="Models Count: " Margin="0,0,0,5" Grid.Row="1" Foreground="#FF55025C" />
+                            <TextBox Text="{Binding Models.Count,Mode=OneWay}" Classes="ReadOnly" TextWrapping="Wrap" Margin="0,0,0,5" Grid.Column="1" Grid.Row="1" Foreground="#FF55025C"/>
+
+                          </Grid>
+                        </DataTemplate>
+                      </ContentControl.DataTemplates>
+                    </ContentControl>
+                  </TabItem>
+                  <TabItem Header="Request">
+                    <Grid>
+                      <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                      </Grid.RowDefinitions>
+
+                      <TextBlock Text="Request Values:"/>
+                      <!--<DataGrid x:Name="DGRequestValues" ScrollViewer.CanContentScroll="False" AutoGenerateColumns="False" CanUserAddRows="False" DataContext="{Binding ElementName=lstRequests,Path=SelectedItem}" ItemsSource="{Binding Parameters}" Margin="0,5,0,0" Grid.Row="1" HeadersVisibility="Column">
+                    <DataGrid.Columns>
+                      <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Name}"/>
+                      <DataGridTemplateColumn Header="Type" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                          <DataTemplate>
+                            <StackPanel Orientation="Vertical">
+                              <TextBlock Text="{Binding Type}" Margin="5,0,5,0"/>
+                              <Button Margin="5,0,5,0" Click="loadTemplate_Click" Content="Load Simple Template" Padding="10,0,10,0"/>
+                              <Button Margin="5,0,5,0" Click="loadTemplate_Click" Content="Load Full Template" Padding="10,0,10,0"/>
+                            </StackPanel>
+                          </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                      </DataGridTemplateColumn>
+                      <DataGridTextColumn Header="Template" Binding="{Binding TemplateValue}">
+                        <DataGridTextColumn.ElementStyle>
+                          <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                          </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.EditingElementStyle>
+                          <Style TargetType="TextBox">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                            <Setter Property="AcceptsReturn" Value="true" />
+                          </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                      </DataGridTextColumn>
+                      <DataGridCheckBoxColumn Header="Is JSON" Binding="{Binding IsJson}"/>
+                      <DataGridTextColumn Header="Value" Binding="{Binding Value}">
+                        <DataGridTextColumn.ElementStyle>
+                          <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                          </Style>
+                        </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.EditingElementStyle>
+                          <Style TargetType="TextBox">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                            <Setter Property="AcceptsReturn" Value="true" />
+                          </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                      </DataGridTextColumn>
+                    </DataGrid.Columns>
+                  </DataGrid>-->
+                      <Grid Grid.Row="2" Height="23">
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition />
+                          <ColumnDefinition Width="auto"/>
+                          <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="btnSend" Content="Send" Padding="10,0,10,0" Margin="0,5,0,0" />
+                        <Button Grid.Column="1" x:Name="btnAttachment" Content="Attach File (0)" Padding="10,0,10,0" Margin="10,5,0,0" />
+                        <Button Grid.Column="2" x:Name="btnRemoveAttachment" Content="Remove Attachment" Padding="10,0,10,0" Margin="10,5,0,0" />
+                      </Grid>
+                      <TextBlock Text="Response Json:" Margin="0,5,0,5" Grid.Row="3"/>
+                      <TabControl  Grid.Row="4">
+                        <!--<TabItem Header="Design Data">
+                          <TextBlock Text="Comming soon!"/>
+                        </TabItem>-->
+                        <TabItem x:Name="rawDataTab" Header="Raw Data">
+                          <TextBox x:Name="txtReponse" Margin="0,5,0,0" AcceptsReturn="True" TextWrapping="Wrap"/>
+                        </TabItem>
+                      </TabControl>
+                      <Button x:Name="btnToString" Content="ToString" Height="23" Padding="10,0,10,0" Margin="0,5,0,0" Grid.Row="5"/>
+                    </Grid>
+                  </TabItem>
+                </TabControl>
+              </Grid>
+            </TabItem>
+            <!--<TabItem Header="History Calls">
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="auto"/>
+              <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Margin="0,5,5,0">
+              <ListBox x:Name="lstHistoryCalls" ItemsSource="{Binding Histories}">
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding MethodName}"/>
+                      <TextBlock Text="("/>
+                      <TextBlock Text="{Binding CallDateTime}"/>
+                      <TextBlock Text=")"/>
+                    </StackPanel>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </Grid>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+            <Grid Grid.Column="2">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+              <TextBlock Text="Request:"/>
+              <TextBox AcceptsReturn="True" Text="{Binding ElementName=lstHistoryCalls,Path=SelectedItem.Request}" Grid.Row="1" Margin="0,5,0,0"/>
+              <TextBlock Text="Response:" Grid.Row="2" Margin="0,5,0,0"/>
+              <TextBox AcceptsReturn="True" Text="{Binding ElementName=lstHistoryCalls,Path=SelectedItem.Response}" Grid.Row="3" Margin="0,5,0,0"/>
+            </Grid>
+          </Grid>
+        </TabItem>
+        <TabItem Header="History Callbacks">
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="auto"/>
+              <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Margin="0,5,0,0">
+              <TreeView x:Name="lstCallbackCalls" ItemsSource="{Binding CallbackCalls}" Background="#f6f6f6" VirtualizingStackPanel.IsVirtualizing="False">
+                <TreeView.Resources>
+                  <HierarchicalDataTemplate DataType="{x:Type self:CallbackServiceLogInfo}" ItemsSource="{Binding Calls}">
+                    <StackPanel Orientation="Horizontal">
+                      <Image Source="/SignalGoTest;component/Resources/interfaces.png" Margin="0,0,5,0" Width="18" Height="19" />
+                      <TextBlock Text="{Binding ServiceName}" />
+                    </StackPanel>
+                  </HierarchicalDataTemplate>
+                  <HierarchicalDataTemplate DataType="{x:Type self:CallbackMethodLogInfo}">
+                    <StackPanel Orientation="Horizontal">
+                      <Image Source="/SignalGoTest;component/Resources/methods.png" Margin="0,0,5,0" Width="10" Height="12"/>
+                      <TextBlock Text="{Binding MethodName}" />
+                    </StackPanel>
+                  </HierarchicalDataTemplate>
+                </TreeView.Resources>
+              </TreeView>
+            </Grid>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+            <Grid Grid.Column="2">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Method Name: "/>
+                <TextBlock Text="{Binding ElementName=lstCallbackCalls,Path=SelectedItem.MethodName}"/>
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,5,0,0">
+                <TextBlock Text="Date Time: "/>
+                <TextBlock Text="{Binding ElementName=lstCallbackCalls,Path=SelectedItem.DateTime}"/>
+              </StackPanel>
+              <TextBlock Text="Result:" Grid.Row="2" Margin="0,5,0,0"/>
+              <Grid Grid.Row="3" Margin="0,5,0,0">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition/>
+                  <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <ListBox x:Name="lstCallbacksParameters" ItemsSource="{Binding ElementName=lstCallbackCalls,Path=SelectedItem.Parameters}" DisplayMemberPath="Name"/>
+                <TextBox Grid.Column="1" TextWrapping="Wrap" IsReadOnly="True" Text="{Binding ElementName=lstCallbacksParameters,Path=SelectedItem.Value}" />
+              </Grid>
+            </Grid>
+          </Grid>
+        </TabItem>-->
+          </TabControl>
+        </Grid>
+      </Grid>
+    </local:BusyDialogView.Child>
+  </local:BusyDialogView>
+
+</UserControl>

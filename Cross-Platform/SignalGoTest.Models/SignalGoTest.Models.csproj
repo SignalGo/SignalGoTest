@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="D:\Github\MVVMGo\MvvmGo\MvvmGo\MvvmGo.csproj" />
+    <ProjectReference Include="D:\SignalGo\Github\SignalGo-full-net\SignalGo.Client\SignalGo.Client.csproj" />
+    <ProjectReference Include="D:\SignalGo\Github\SignalGo-full-net\SignalGo.Shared\SignalGo.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

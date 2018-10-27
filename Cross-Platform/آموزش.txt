@@ -1,0 +1,7 @@
+﻿بیلد لینوکس:
+dotnet publish -c release -r ubuntu.14.04-x64
+اجرا با دابل کلیک در  لینوکس:
+روی فایل پروپرتیز زده و از تب پریمیشن تیک execute زده شود
+در منوی File و References تب Behavior گزینه ی Executable Text Files رو Run Them انتخاب کن
+
+پروژه روی دوتا TargetFramework هست برای بیلد گرفتن روی سیستم عامل های دیگه فقط روی netcore باشه برای تست روی ویندوز روی net461 هم باشه

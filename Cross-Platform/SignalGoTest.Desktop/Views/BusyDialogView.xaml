@@ -1,0 +1,35 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Grid>
+    <Grid>
+      <Grid x:Name="ChildGrid">
+        
+      </Grid>
+      <Grid x:Name="WhiteGrid" Background="White" Opacity="0.8"/>
+      <Border x:Name="DialogBorder" Background="#ececec" CornerRadius="5" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid Margin="10" >
+          <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+          </Grid.RowDefinitions>
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="auto"/>
+              <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="TitleTextBlock" Text="Connecting..." HorizontalAlignment="Center" Margin="0,5,0,5"/>
+            <ProgressBar x:Name="CurrentProgress" IsIndeterminate="true" Grid.Row="1"/>
+          </Grid>
+          <Grid Grid.Row="1" x:Name="ButtonsGrid" IsVisible="False">
+            <!--<Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>-->
+            <Button Content="Ok" Margin="0,5,0,0"/>
+            <!--<Button Grid.Column="1" IsVisible="False" Margin="0,5,0,0" Content="Cancel"/>-->
+          </Grid>
+        </Grid>
+      </Border>
+    </Grid>
+  </Grid>
+</UserControl>
