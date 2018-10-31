@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data.Converters;
 using Avalonia.Markup;
 using Avalonia.Media.Imaging;
 using SignalGo.Shared.Helpers;

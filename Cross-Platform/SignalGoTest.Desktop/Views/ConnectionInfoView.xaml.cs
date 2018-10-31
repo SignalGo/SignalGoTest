@@ -1,13 +1,6 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Templates;
+﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.Markup.Xaml.Templates;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using SignalGo.Shared.Models;
 using SignalGoTest.ViewModels;
-using System.Collections;
 
 namespace SignalGoTest.Desktop.Views
 {
@@ -15,6 +8,14 @@ namespace SignalGoTest.Desktop.Views
     {
         public ConnectionInfoView()
         {
+            ConnectionInfoViewModel.ShowJsonTemplateWindowAction = async (value) =>
+            {
+                JsonTemplateWindow jsonTemplateWindow = new JsonTemplateWindow();
+                jsonTemplateWindow.ZIndex = 100;
+                jsonTemplateWindow.Text = value;
+                await jsonTemplateWindow.ShowDialog();
+            };
+
             InitializeComponent();
         }
 

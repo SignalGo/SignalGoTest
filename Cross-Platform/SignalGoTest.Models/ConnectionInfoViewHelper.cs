@@ -10,7 +10,8 @@ namespace SignalGoTest.Models
     public class ConnectionInfoViewHelper
     {
         public ClientProvider Provider { get; private set; } = new ClientProvider();
-
+        public string Session { get; set; }
+        public string AttachmentFile { get; set; }
         public ConnectionInfoViewHelper()
         {
 

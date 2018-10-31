@@ -5,3 +5,11 @@ dotnet publish -c release -r ubuntu.14.04-x64
 در منوی File و References تب Behavior گزینه ی Executable Text Files رو Run Them انتخاب کن
 
 پروژه روی دوتا TargetFramework هست برای بیلد گرفتن روی سیستم عامل های دیگه فقط روی netcore باشه برای تست روی ویندوز روی net461 هم باشه
+
+عدم اجرای صحیح یا عدم ارتباط با اینترنت یا اپدیت نرم افزار لینک های زیر اجرا شود:
+https://docs.microsoft.com/en-us/dotnet/core/linux-prerequisites?tabs=netcore2x
+
+در لینک زیر :
+https://docs.microsoft.com/en-us/dotnet/core/linux-prerequisites?tabs=netcore2x
+
+بخش ./dotnet-install.sh -c Current

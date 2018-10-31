@@ -26,6 +26,12 @@ namespace SignalGoTest.Desktop
             //a.DataType
             ListBox ListConnections = this.FindControl<ListBox>("ListConnections");
             ListConnections.SelectedIndex = 1;
+            Closing += MainWindow_Closing;
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            MainViewModel.This.Save();
         }
 
         private void lslConnections_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -34,7 +40,7 @@ namespace SignalGoTest.Desktop
             ConnectionInfoView ConnectionView = this.FindControl<ConnectionInfoView>("ConnectionView");
             AddNewView AddNewView = this.FindControl<AddNewView>("AddNewView");
             ConnectionInfo item = (ConnectionInfo)ListConnections.SelectedItem;
-            ((ConnectionInfoViewModel)ConnectionView.DataContext).CurrentConnectionInfo = item;
+            ((ConnectionInfoViewModel)((Control)ConnectionView.Content).DataContext).CurrentConnectionInfo = item;
 
             AddNewView.IsVisible = item.Name == "Add New...";
             ConnectionView.IsVisible = !AddNewView.IsVisible;

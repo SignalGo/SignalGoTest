@@ -5,10 +5,13 @@
              xmlns:conv="clr-namespace:SignalGoTest.Desktop.Converters"
              xmlns:types="clr-namespace:SignalGo.Shared.Helpers;assembly=SignalGo.Shared"
              xmlns:viewmodels="clr-namespace:SignalGoTest.ViewModels;assembly=SignalGoTest.ViewModels">
-  <UserControl.DataContext>
+  <UserControl.Resources>
+    <viewmodels:ConnectionInfoViewModel x:Key="ConnectionInfoViewModel"/>
+  </UserControl.Resources>
+  <!--<UserControl.DataContext>
     <viewmodels:ConnectionInfoViewModel />
-  </UserControl.DataContext>
-  <local:BusyDialogView IsBusy="{Binding IsBusy}" IsAlert="{Binding IsAlert}" Message="{Binding BusyContent}">
+  </UserControl.DataContext>-->
+  <local:BusyDialogView DataContext="{StaticResource ConnectionInfoViewModel}" IsBusy="{Binding IsBusy}" IsAlert="{Binding IsAlert}" Message="{Binding BusyContent}">
     <local:BusyDialogView.Child>
       <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -21,7 +24,7 @@
           <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
             <Button Command="{Binding ConnectCommand}" Content="Connect" />
             <Button x:Name="btndisconnect" Command="{Binding DisconnectCommand}" IsEnabled="False" Content="Disconncet" Margin="5,0,0,0"/>
-            <Button x:Name="btnHtttpUpdate" Content="Http Update"  Margin="5,0,0,0"/>
+            <Button x:Name="btnHtttpUpdate" Command="{Binding HttpUpdateCommand}"  Content="Http Update"  Margin="5,0,0,0"/>
             <Button x:Name="btnSave" Command="{Binding SaveCommand}" Content="Save" Margin="5,0,0,0"/>
           </StackPanel>
         </StackPanel>
@@ -44,7 +47,7 @@
                   <TextBox x:Name="txtSearch">
 
                   </TextBox>
-                  <TreeView x:Name="TreeViewServices" BorderThickness="1" Background="White" Margin="0,5,0,0" DataContext="{Binding CurrentConnectionInfo}" Items="{Binding ItemsSource}" Grid.Row="1">
+                  <TreeView x:Name="TreeViewServices" BorderThickness="1" Background="White" Margin="0,5,0,0" Items="{Binding CurrentConnectionInfo.ItemsSource}" SelectedItem="{Binding SelectedTreeItem}" Grid.Row="1">
                     <TreeView.DataTemplates>
                       <TreeDataTemplate DataType="{x:Type self:ServiceDetailsInterface}" ItemsSource="{Binding Methods}">
                         <StackPanel Orientation="Horizontal">
@@ -139,7 +142,7 @@
                     <TextBox x:Name="newRequestName" Text=""/>
                     <Button x:Name="btnAddRequest" Content="Add" Grid.Column="1"/>
                   </Grid>
-                  <ListBox x:Name="lstRequests" Grid.Row="1" SelectedIndex="0" Items="{Binding SelectedItem.Requests,ElementName=TreeViewServices}">
+                  <ListBox x:Name="lstRequests" Grid.Row="1" Items="{Binding SelectedItem.Requests,ElementName=TreeViewServices}" SelectedItem="{Binding ServiceDetailsRequestInfo,Mode=OneWayToSource}"  SelectedIndex="0">
                     <ListBox.ItemTemplate>
                       <DataTemplate>
                         <Grid>
@@ -345,7 +348,7 @@
                     </ContentControl>
                   </TabItem>
                   <TabItem Header="Request">
-                    <Grid>
+                    <Grid IsEnabled="{Binding IsRequestSelected}">
                       <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
@@ -356,6 +359,28 @@
                       </Grid.RowDefinitions>
 
                       <TextBlock Text="Request Values:"/>
+                      <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+                        <ItemsControl DataContext="{Binding ElementName=lstRequests,Path=SelectedItem}" Items="{Binding Parameters}" Margin="0,5,0,0">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                              <Grid Margin="5">
+                                <Grid.ColumnDefinitions>
+                                  <ColumnDefinition Width="auto"/>
+                                  <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel x:Name="mainStack" Margin="5" Orientation="Horizontal">
+                                  <TextBlock VerticalAlignment="Center" Text="{Binding Name}"/>
+                                  <TextBlock VerticalAlignment="Center" Text=":"/>
+                                  <Button Margin="5,0,0,0" VerticalAlignment="Center" Content="Simple Template" DataContext="{DynamicResource ConnectionInfoViewModel}" Command="{Binding LoadSimpleTemplateCommand}" CommandParameter="{Binding DataContext,ElementName=mainStack}" />
+                                  <Button Margin="5,0,0,0" VerticalAlignment="Center" Content="Full Template" DataContext="{DynamicResource ConnectionInfoViewModel}" Command="{Binding LoadFullTemplateCommand}" CommandParameter="{Binding DataContext,ElementName=mainStack}"/>
+                                </StackPanel>
+                                <TextBox Grid.Column="1" Text="{Binding Value}" AcceptsReturn="True" TextWrapping="Wrap"/>
+                              </Grid>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </ScrollViewer>
+
                       <!--<DataGrid x:Name="DGRequestValues" ScrollViewer.CanContentScroll="False" AutoGenerateColumns="False" CanUserAddRows="False" DataContext="{Binding ElementName=lstRequests,Path=SelectedItem}" ItemsSource="{Binding Parameters}" Margin="0,5,0,0" Grid.Row="1" HeadersVisibility="Column">
                     <DataGrid.Columns>
                       <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Name}"/>
@@ -405,7 +430,7 @@
                           <ColumnDefinition Width="auto"/>
                           <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="btnSend" Content="Send" Padding="10,0,10,0" Margin="0,5,0,0" />
+                        <Button x:Name="btnSend" DataContext="{DynamicResource ConnectionInfoViewModel}" Command="{Binding SendCommand}" Content="Send" Padding="10,0,10,0" Margin="0,5,0,0" />
                         <Button Grid.Column="1" x:Name="btnAttachment" Content="Attach File (0)" Padding="10,0,10,0" Margin="10,5,0,0" />
                         <Button Grid.Column="2" x:Name="btnRemoveAttachment" Content="Remove Attachment" Padding="10,0,10,0" Margin="10,5,0,0" />
                       </Grid>
@@ -415,7 +440,7 @@
                           <TextBlock Text="Comming soon!"/>
                         </TabItem>-->
                         <TabItem x:Name="rawDataTab" Header="Raw Data">
-                          <TextBox x:Name="txtReponse" Margin="0,5,0,0" AcceptsReturn="True" TextWrapping="Wrap"/>
+                          <TextBox x:Name="txtReponse" Text="{Binding ServiceDetailsRequestInfo.Response}" Margin="0,5,0,0" AcceptsReturn="True" TextWrapping="Wrap"/>
                         </TabItem>
                       </TabControl>
                       <Button x:Name="btnToString" Content="ToString" Height="23" Padding="10,0,10,0" Margin="0,5,0,0" Grid.Row="5"/>
