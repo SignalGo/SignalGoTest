@@ -19,6 +19,7 @@ namespace SignalGoTest.Desktop.Views
             InitializeComponent();
         }
 
+
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);

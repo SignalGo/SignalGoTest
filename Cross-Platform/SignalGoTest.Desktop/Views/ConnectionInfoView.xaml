@@ -3,8 +3,9 @@
              xmlns:self="clr-namespace:SignalGo.Shared.Models;assembly=SignalGo.Shared"
              xmlns:local="clr-namespace:SignalGoTest.Desktop.Views"
              xmlns:conv="clr-namespace:SignalGoTest.Desktop.Converters"
+             xmlns:cmd="clr-namespace:SignalGoTest.Desktop.Helpers"
              xmlns:types="clr-namespace:SignalGo.Shared.Helpers;assembly=SignalGo.Shared"
-             xmlns:viewmodels="clr-namespace:SignalGoTest.ViewModels;assembly=SignalGoTest.ViewModels">
+             xmlns:viewmodels="clr-namespace:SignalGoTest.ViewModels;assembly=SignalGoTest.ViewModels" FontFamily="Tahoma">
   <UserControl.Resources>
     <viewmodels:ConnectionInfoViewModel x:Key="ConnectionInfoViewModel"/>
   </UserControl.Resources>
@@ -20,7 +21,9 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.ColumnSpan="2">
           <TextBlock Text="Server Address:"/>
-          <TextBox x:Name="txtAddress" Text="{Binding CurrentConnectionInfo.ServerAddress}" Margin="0,5,0,0"/>
+          <TextBox x:Name="txtAddress" Text="{Binding CurrentConnectionInfo.ServerAddress}" Margin="0,5,0,0">
+            
+          </TextBox>
           <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
             <Button Command="{Binding ConnectCommand}" Content="Connect" />
             <Button x:Name="btndisconnect" Command="{Binding DisconnectCommand}" IsEnabled="False" Content="Disconncet" Margin="5,0,0,0"/>

@@ -9,5 +9,10 @@ namespace SignalGoTest.Desktop
         {
             AvaloniaXamlLoader.Load(this);
         }
+
+        public void ContextMenu_Initialized(object sender, System.EventArgs e)
+        {
+
+        }
     }
 }

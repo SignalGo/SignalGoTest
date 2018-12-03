@@ -1,8 +1,13 @@
 ﻿<Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:SignalGoTest.Desktop.Converters"
+             xmlns:cmd="clr-namespace:SignalGoTest.Desktop.Helpers"
              xmlns:self="clr-namespace:SignalGo.Shared.Models;assembly=SignalGo.Shared">
+  <Application.Resources>
+    <cmd:CommandsViewModel x:Key="CommandsViewModel"/>
+  </Application.Resources>
   <Application.Styles>
+    
     <StyleInclude Source="resm:Avalonia.Themes.Default.DefaultTheme.xaml?assembly=Avalonia.Themes.Default"/>
     <StyleInclude Source="resm:Avalonia.Themes.Default.Accents.BaseLight.xaml?assembly=Avalonia.Themes.Default"/>
     <Style Selector="Button">
@@ -98,6 +103,19 @@
             </DockPanel>
           </Border>
         </ControlTemplate>
+      </Setter>
+      <Setter Property="ContextMenu">
+        <Setter.Value>
+          <Template>
+            <ContextMenu x:Name="contextMenu">
+              <MenuItem Header="Cut" Command="{Binding CutCommand,Source={StaticResource CommandsViewModel}}" CommandParameter="{Binding ElementName=contextMenu}" />
+              <MenuItem Header="Copy" Command="{Binding CopyCommand,Source={StaticResource CommandsViewModel}}" CommandParameter="{Binding ElementName=contextMenu}" />
+              <MenuItem Header="Paste" Command="{Binding PasteCommand,Source={StaticResource CommandsViewModel}}" CommandParameter="{Binding ElementName=contextMenu}" />
+              <MenuItem Header="Clear" Command="{Binding ClearCommand,Source={StaticResource CommandsViewModel}}" CommandParameter="{Binding ElementName=contextMenu}" />
+              <!--<MenuItem Header="Select All" Command="{Binding SelctAllCommand,Source={StaticResource CommandsViewModel}}" CommandParameter="{Binding ElementName=contextMenu}" />-->
+            </ContextMenu>
+          </Template>
+        </Setter.Value>
       </Setter>
     </Style>
 
