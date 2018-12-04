@@ -11,6 +11,7 @@ using SignalGo.Shared.Models;
 using SignalGoTest.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -52,11 +53,16 @@ namespace SignalGoTest.ViewModels
             });
             SendCommand = new Command(Send);
             HttpUpdateCommand = new Command(HttpUpdate);
+            AddNewRequestCommand = new Command(AddNewRequest, () =>
+            {
+                return SelectedTreeItem is ServiceDetailsMethod;
+            });
         }
 
 
         private bool _IsAlert;
         private string _SearchText = "";
+        private string _RequestName;
         private object _SelectedTreeItem;
         public Command ConnectCommand { get; set; }
         public Command DisconnectCommand { get; set; }
@@ -65,6 +71,7 @@ namespace SignalGoTest.ViewModels
         public Command<ServiceDetailsParameterInfo> LoadFullTemplateCommand { get; set; }
         public Command SendCommand { get; set; }
         public Command HttpUpdateCommand { get; set; }
+        public Command AddNewRequestCommand { get; set; }
 
         public override bool IsBusy
         {
@@ -161,9 +168,23 @@ namespace SignalGoTest.ViewModels
             {
                 _SelectedTreeItem = value;
                 OnPropertyChanged(nameof(SelectedTreeItem));
+                AddNewRequestCommand.ValidateCanExecute();
             }
         }
 
+        public string RequestName
+        {
+            get
+            {
+                return _RequestName;
+            }
+
+            set
+            {
+                _RequestName = value;
+                OnPropertyChanged(nameof(RequestName));
+            }
+        }
 
         private void Disconnect()
         {
@@ -236,6 +257,7 @@ namespace SignalGoTest.ViewModels
 
                 BusyContent = "Receiving data...";
                 ProviderDetailsInfo result = await provider.GetListOfServicesWithDetials(CurrentConnectionInfo.ServerAddress);
+                result.ProjectDomainDetailsInfo.Models = result.ProjectDomainDetailsInfo.Models.OrderBy(x => x.ObjectType == SerializeObjectType.Enum).ThenBy(x => x.Name).ToList();
                 ProviderDetailsInfo oldItems = currentView.Items;
                 currentView.Items = result;
                 currentView.OnPropertyChanged("ItemsSource");
@@ -464,6 +486,46 @@ namespace SignalGoTest.ViewModels
             {
                 AutoLogger.Default.LogError(ex, "Send");
                 BusyContent = ex.Message;
+                await Task.Delay(3000);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async void AddNewRequest()
+        {
+            try
+            {
+                ServiceDetailsMethod selectedMethod = (ServiceDetailsMethod)SelectedTreeItem;
+                if (selectedMethod == null)
+                    return;
+                ObservableCollection<ServiceDetailsRequestInfo> requests = selectedMethod.Requests;
+                string newName = RequestName.Trim();
+                if (requests.Any(x => x.Name == newName) || string.IsNullOrEmpty(newName))
+                {
+                    BusyContent = "name is exist or empty!";
+                    IsBusy = true;
+                    await Task.Delay(3000);
+                    return;
+                }
+                ServiceDetailsRequestInfo request = new ServiceDetailsRequestInfo() { Name = newName, Parameters = new List<ServiceDetailsParameterInfo>() };
+                foreach (ServiceDetailsParameterInfo item in selectedMethod.Requests.FirstOrDefault().Parameters)
+                {
+                    ServiceDetailsParameterInfo clone = item.Clone();
+                    clone.Value = null;
+                    clone.TemplateValue = "";
+                    request.Parameters.Add(clone);
+                }
+                requests.Add(request);
+                RequestName = "";
+                MainViewModel.This.Save();
+            }
+            catch (Exception ex)
+            {
+                BusyContent = ex.Message;
+                IsBusy = true;
                 await Task.Delay(3000);
             }
             finally

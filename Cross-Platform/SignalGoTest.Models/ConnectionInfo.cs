@@ -23,6 +23,7 @@ namespace SignalGoTest.Models
                 items.AddRange(Items.Services);
                 items.AddRange(Items.Callbacks);
                 items.Add(Items.WebApiDetailsInfo);
+                Items.ProjectDomainDetailsInfo.Models = Items.ProjectDomainDetailsInfo.Models.OrderBy(x => x.ObjectType == SignalGo.Shared.Helpers.SerializeObjectType.Enum).ThenBy(x => x.Name).ToList();
                 items.Add(Items.ProjectDomainDetailsInfo);
                 return items;
             }

@@ -6,8 +6,8 @@
   <Application.Resources>
     <cmd:CommandsViewModel x:Key="CommandsViewModel"/>
   </Application.Resources>
+  
   <Application.Styles>
-    
     <StyleInclude Source="resm:Avalonia.Themes.Default.DefaultTheme.xaml?assembly=Avalonia.Themes.Default"/>
     <StyleInclude Source="resm:Avalonia.Themes.Default.Accents.BaseLight.xaml?assembly=Avalonia.Themes.Default"/>
     <Style Selector="Button">

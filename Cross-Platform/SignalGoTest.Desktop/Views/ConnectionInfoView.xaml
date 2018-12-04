@@ -51,6 +51,7 @@
 
                   </TextBox>
                   <TreeView x:Name="TreeViewServices" BorderThickness="1" Background="White" Margin="0,5,0,0" Items="{Binding CurrentConnectionInfo.ItemsSource}" SelectedItem="{Binding SelectedTreeItem}" Grid.Row="1">
+                    
                     <TreeView.DataTemplates>
                       <TreeDataTemplate DataType="{x:Type self:ServiceDetailsInterface}" ItemsSource="{Binding Methods}">
                         <StackPanel Orientation="Horizontal">
@@ -142,8 +143,8 @@
                       <ColumnDefinition Width="*"/>
                       <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="newRequestName" Text=""/>
-                    <Button x:Name="btnAddRequest" Content="Add" Grid.Column="1"/>
+                    <TextBox x:Name="newRequestName" Text="{Binding RequestName}"/>
+                    <Button x:Name="btnAddRequest" Command="{Binding AddNewRequestCommand}" Content="Add" Grid.Column="1"/>
                   </Grid>
                   <ListBox x:Name="lstRequests" Grid.Row="1" Items="{Binding SelectedItem.Requests,ElementName=TreeViewServices}" SelectedItem="{Binding ServiceDetailsRequestInfo,Mode=OneWayToSource}"  SelectedIndex="0">
                     <ListBox.ItemTemplate>
