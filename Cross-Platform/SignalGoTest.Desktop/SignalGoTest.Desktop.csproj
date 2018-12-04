@@ -2,11 +2,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <ApplicationIcon>signalgo icon.ico</ApplicationIcon>
-    <!--<TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
-    <RuntimeIdentifiers>win7-x64</RuntimeIdentifiers>-->
-    <RootNamespace>SignalGoTestClient</RootNamespace>
-    <AssemblyName>SignalGoTestClient</AssemblyName>
+    <!--<TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>-->
+    <RuntimeIdentifiers>win7-x64</RuntimeIdentifiers>
     <AssemblyVersion>4.5</AssemblyVersion>
     <FileVersion>4.5</FileVersion>
     <Version>4.5</Version>
