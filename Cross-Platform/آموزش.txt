@@ -1,6 +1,4 @@
-﻿بیلد لینوکس:
-dotnet publish -c release -r ubuntu.14.04-x64
-اجرا با دابل کلیک در  لینوکس:
+﻿اجرا با دابل کلیک در  لینوکس:
 روی فایل پروپرتیز زده و از تب پریمیشن تیک execute زده شود
 در منوی File و References تب Behavior گزینه ی Executable Text Files رو Run Them انتخاب کن
 
@@ -13,3 +11,10 @@ https://docs.microsoft.com/en-us/dotnet/core/linux-prerequisites?tabs=netcore2x
 https://docs.microsoft.com/en-us/dotnet/core/linux-prerequisites?tabs=netcore2x
 
 بخش ./dotnet-install.sh -c Current
+
+بیلد لینوکس:
+dotnet publish -c release -r ubuntu.14.04-x64
+بیلد ویندوز:
+dotnet publish -c release -r win7-x64
+بیلد مک:
+dotnet publish -c release -r osx.10.11-x64 
