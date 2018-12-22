@@ -4,9 +4,9 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <!--<TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>-->
     <RuntimeIdentifiers>win7-x64</RuntimeIdentifiers>
-    <AssemblyVersion>4.5</AssemblyVersion>
-    <FileVersion>4.5</FileVersion>
-    <Version>4.5</Version>
+    <AssemblyVersion>5.0</AssemblyVersion>
+    <FileVersion>5.0</FileVersion>
+    <Version>5.0</Version>
     <Copyright>Copyright © ali.visual.studio@gmail.com 2016</Copyright>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -70,6 +70,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\SignalGo-full-net\SignalGo.Client\SignalGo.Client.csproj" />
     <ProjectReference Include="..\..\..\SignalGo-full-net\SignalGo.Shared\SignalGo.Shared.csproj" />
+    <ProjectReference Include="..\..\..\SignalGoAddServiceReference\SignalGo.CodeGenerator\SignalGo.CodeGenerator.csproj" />
     <ProjectReference Include="..\SignalGoTest.Models\SignalGoTest.Models.csproj" />
     <ProjectReference Include="..\SignalGoTest.ViewModels\SignalGoTest.ViewModels.csproj" />
     <ProjectReference Include="D:\Github\MVVMGo\MvvmGo\MvvmGo\MvvmGo.csproj" />

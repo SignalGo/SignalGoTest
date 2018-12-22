@@ -9,6 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\SignalGoAddServiceReference\SignalGo.CodeGenerator\SignalGo.CodeGenerator.csproj">
+      <Aliases>SignalGoCodeGenerator</Aliases>
+    </ProjectReference>
     <ProjectReference Include="..\SignalGoTest.Models\SignalGoTest.Models.csproj" />
     <ProjectReference Include="D:\Github\MVVMGo\MvvmGo\MvvmGo\MvvmGo.csproj" />
   </ItemGroup>

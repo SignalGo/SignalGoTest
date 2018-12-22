@@ -1,4 +1,6 @@
-﻿using MvvmGo.Commands;
+﻿extern alias SignalGoCodeGenerator;
+
+using MvvmGo.Commands;
 using MvvmGo.ViewModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,7 +10,9 @@ using SignalGo.Shared;
 using SignalGo.Shared.Helpers;
 using SignalGo.Shared.Log;
 using SignalGo.Shared.Models;
+using SignalGoCodeGenerator::SignalGo.CodeGenerator.Models;
 using SignalGoTest.Models;
+using SignalGoTest.ViewModels.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -57,8 +61,8 @@ namespace SignalGoTest.ViewModels
             {
                 return SelectedTreeItem is ServiceDetailsMethod;
             });
+            GenerateCodeCommand = new Command(GenerateCode);
         }
-
 
         private bool _IsAlert;
         private string _SearchText = "";
@@ -72,6 +76,7 @@ namespace SignalGoTest.ViewModels
         public Command SendCommand { get; set; }
         public Command HttpUpdateCommand { get; set; }
         public Command AddNewRequestCommand { get; set; }
+        public Command GenerateCodeCommand { get; set; }
 
         public override bool IsBusy
         {
@@ -570,5 +575,42 @@ namespace SignalGoTest.ViewModels
                 IsBusy = false;
             }
         }
+
+        private async void GenerateCode()
+        {
+            try
+            {
+                BusyContent = "Generating Code...";
+                IsBusy = true;
+                if (!Directory.Exists(CurrentConnectionInfo.CodeGeneratorInfo.SaveFolderPath))
+                    Directory.CreateDirectory(CurrentConnectionInfo.CodeGeneratorInfo.SaveFolderPath);
+                AddReferenceConfigInfo config = new AddReferenceConfigInfo
+                {
+                    ServiceUrl = CurrentConnectionInfo.ServerAddress,
+                    ServiceNameSpace = CurrentConnectionInfo.CodeGeneratorInfo.ServerNameSpace,
+                    LanguageType = (int)CurrentConnectionInfo.CodeGeneratorInfo.LanguageType,
+                    ServiceType = (int)CurrentConnectionInfo.CodeGeneratorInfo.ServiceType,
+                    IsGenerateAsyncMethods = CurrentConnectionInfo.CodeGeneratorInfo.IsAsyncMethods,
+                    IsJustGenerateServices = CurrentConnectionInfo.CodeGeneratorInfo.IsJustServices
+                };
+
+                await Task.Run(() =>
+                {
+                    string fullFilePath = LanguageMap.Current.DownloadService(CurrentConnectionInfo.CodeGeneratorInfo.SaveFolderPath, config);
+                });
+                BusyContent = "Success";
+                await Task.Delay(2000);
+            }
+            catch (Exception ex)
+            {
+                BusyContent = ex.ToString();
+                await Task.Delay(2000);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
     }
 }

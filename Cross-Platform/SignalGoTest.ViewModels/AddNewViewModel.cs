@@ -1,5 +1,6 @@
 ﻿using MvvmGo.Commands;
 using MvvmGo.ViewModels;
+using SignalGoTest.Models;
 using System;
 using System.Linq;
 
@@ -11,7 +12,7 @@ namespace SignalGoTest.ViewModels
         {
             AddCommand = new Command(() =>
             {
-                MainViewModel.This.CurrentAppData.Items.Add(new Models.ConnectionInfo() { Name = Name });
+                MainViewModel.This.CurrentAppData.Items.Add(new ConnectionInfo() { Name = Name });
                 Name = "";
                 MainViewModel.This.Save();
             }, () =>

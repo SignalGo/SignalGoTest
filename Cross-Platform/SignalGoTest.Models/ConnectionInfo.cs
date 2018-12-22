@@ -13,6 +13,22 @@ namespace SignalGoTest.Models
         public string ServerAddress { get; set; }
         public string ServiceName { get; set; }
         public ProviderDetailsInfo Items { get; set; }
+
+        CodeGeneratorInfo _CodeGeneratorInfo = null;
+        public CodeGeneratorInfo CodeGeneratorInfo
+        {
+            get
+            {
+                if (_CodeGeneratorInfo == null)
+                    _CodeGeneratorInfo = new CodeGeneratorInfo();
+                return _CodeGeneratorInfo;
+            }
+            set
+            {
+                _CodeGeneratorInfo = value;
+            }
+        }
+
         public List<object> ItemsSource
         {
             get

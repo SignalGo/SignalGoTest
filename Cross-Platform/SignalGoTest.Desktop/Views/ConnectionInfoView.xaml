@@ -8,6 +8,7 @@
              xmlns:viewmodels="clr-namespace:SignalGoTest.ViewModels;assembly=SignalGoTest.ViewModels" FontFamily="Tahoma">
   <UserControl.Resources>
     <viewmodels:ConnectionInfoViewModel x:Key="ConnectionInfoViewModel"/>
+    <conv:EnumToIntegerConverter x:Key="EnumToIntegerConverter"/>
   </UserControl.Resources>
   <!--<UserControl.DataContext>
     <viewmodels:ConnectionInfoViewModel />
@@ -451,6 +452,46 @@
                     </Grid>
                   </TabItem>
                 </TabControl>
+              </Grid>
+            </TabItem>
+            <TabItem Header="Code Generator">
+              <Grid Margin="10">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="auto"/>
+                  <RowDefinition Height="auto"/>
+                  <RowDefinition Height="auto"/>
+                  <RowDefinition Height="auto"/>
+                  <RowDefinition Height="auto"/>
+                  <RowDefinition Height="auto"/>
+                  <RowDefinition Height="auto"/>
+                  <RowDefinition Height="auto"/>
+                  <RowDefinition Height="auto"/>
+                  <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Foreground="Black" Text="Server NameSpace:  (example: &quot;MyService&quot;)" Margin="0,10,10,0"/>
+                <TextBox Text="{Binding CurrentConnectionInfo.CodeGeneratorInfo.ServerNameSpace}" Grid.Row="1" Margin="0,10,0,0"/>
+                <TextBlock Foreground="Black" Grid.Row="2" Text="Language Type:" Margin="0,10,10,0"/>
+                <DropDown x:Name="cboLanguage" Background="White" Foreground="Black" Grid.Row="3" SelectedIndex="{Binding CurrentConnectionInfo.CodeGeneratorInfo.LanguageType,Converter={StaticResource EnumToIntegerConverter},Mode=Twoway}" Margin="0,10,0,0">
+                  <DropDownItem Content="C#" Background="White"/>
+                  <DropDownItem Content="Angular Type Script" Background="White"/>
+                  <DropDownItem Content="C# Blazor" Background="White"/>
+                  <DropDownItem Content="Java Android" Background="White"/>
+                  <DropDownItem Content="Swift" Background="White"/>
+                </DropDown>
+                <TextBlock Foreground="Black" Grid.Row="4" Text="Service Type:" Margin="0,10,10,0"/>
+                <DropDown x:Name="cboServiceType" Background="White" Foreground="Black" Grid.Row="5" SelectedIndex="{Binding CurrentConnectionInfo.CodeGeneratorInfo.ServiceType,Converter={StaticResource EnumToIntegerConverter},Mode=Twoway}" Margin="0,10,0,0">
+                  <DropDownItem Content="SignalGo" Background="White"/>
+                  <DropDownItem Content="Soap Web Service" Background="White"/>
+                </DropDown>
+                <Expander Grid.Row="6" Header="Settings" IsExpanded="True" Margin="0,10,0,0">
+                  <StackPanel Margin="10">
+                    <CheckBox x:Name="chkJustServices" IsChecked="{Binding CurrentConnectionInfo.CodeGeneratorInfo.IsJustServices}" Content="Just Services (no models, enums etc)"/>
+                    <CheckBox x:Name="chkAsyncMethods" IsChecked="{Binding CurrentConnectionInfo.CodeGeneratorInfo.IsAsyncMethods}" Content="Generate async methods"/>
+                  </StackPanel>
+                </Expander>
+                <TextBlock Foreground="Black" Grid.Row="7" Text="Generate Path (folder address):" Margin="0,10,10,0"/>
+                <TextBox Grid.Row="8" Text="{Binding CurrentConnectionInfo.CodeGeneratorInfo.SaveFolderPath}" Margin="0,10,0,0"/>
+                <Button Command="{Binding GenerateCodeCommand}" Height="30" Grid.Row="9" Margin="0,10,0,0" Content="Generate"/>
               </Grid>
             </TabItem>
             <!--<TabItem Header="History Calls">
