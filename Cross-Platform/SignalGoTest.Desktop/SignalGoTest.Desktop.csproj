@@ -70,10 +70,14 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\SignalGo-full-net\SignalGo.Client\SignalGo.Client.csproj" />
     <ProjectReference Include="..\..\..\SignalGo-full-net\SignalGo.Shared\SignalGo.Shared.csproj" />
-    <ProjectReference Include="..\..\..\SignalGoAddServiceReference\SignalGo.CodeGenerator\SignalGo.CodeGenerator.csproj" />
     <ProjectReference Include="..\SignalGoTest.Models\SignalGoTest.Models.csproj" />
     <ProjectReference Include="..\SignalGoTest.ViewModels\SignalGoTest.ViewModels.csproj" />
     <ProjectReference Include="D:\Github\MVVMGo\MvvmGo\MvvmGo\MvvmGo.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SignalGo.CodeGenerator">
+      <HintPath>..\..\..\SignalGoAddServiceReference\SignalGo.CodeGenerator\bin\Debug\netstandard2.0\SignalGo.CodeGenerator.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Views\AddNewView.xaml">
