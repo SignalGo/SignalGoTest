@@ -555,13 +555,21 @@ namespace SignalGoTest.ViewModels
                     webClient.Headers.Add(HttpRequestHeader.UserAgent, "signalgo test");
 
                     string data = await webClient.UploadStringTaskAsync(address, "test");
-                    ProviderDetailsInfo result = ClientSerializationHelper.DeserializeObject<ProviderDetailsInfo>(data);
-                    ProviderDetailsInfo oldItems = currentView.Items;
-                    currentView.Items = result;
-                    currentView.OnPropertyChanged("ItemsSource");
-                    await currentView.ConnectionInfoViewHelper.CalculateDetails(result, oldItems, SearchText);
-                    BusyContent = "Success";
-                    await Task.Delay(3000);
+                    if (data == "\r\nSignalGo Server OK\r\n")
+                    {
+                        BusyContent = "SignalGo Server OK, please dont use index of address on your signalgo server like http://localhost:8080 use http://localhost:8080/any";
+                        await Task.Delay(3000);
+                    }
+                    else
+                    {
+                        ProviderDetailsInfo result = ClientSerializationHelper.DeserializeObject<ProviderDetailsInfo>(data);
+                        ProviderDetailsInfo oldItems = currentView.Items;
+                        currentView.Items = result;
+                        currentView.OnPropertyChanged("ItemsSource");
+                        await currentView.ConnectionInfoViewHelper.CalculateDetails(result, oldItems, SearchText);
+                        BusyContent = "Success";
+                        await Task.Delay(3000);
+                    }
                 }
             }
             catch (Exception ex)

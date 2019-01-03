@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalGoTest.Models", "Sign
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{D1E3BB4F-F610-4687-9D6A-B60F167BB8DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvvmGo", "D:\Github\MVVMGo\MvvmGo\MvvmGo\MvvmGo.csproj", "{3086B5CD-6DCE-4C21-9EE0-397906205D4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvvmGo", "D:\Github\MVVMGo\MvvmGo\MvvmGo.csproj", "{3086B5CD-6DCE-4C21-9EE0-397906205D4E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalGo.Client", "D:\SignalGo\Github\SignalGo-full-net\SignalGo.Client\SignalGo.Client.csproj", "{DA4F99A9-69E4-48F1-8850-5298F7762AB9}"
 EndProject

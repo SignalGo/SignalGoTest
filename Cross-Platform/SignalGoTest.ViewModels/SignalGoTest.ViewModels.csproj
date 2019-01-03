@@ -9,8 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Github\MVVMGo\MvvmGo\MvvmGo.csproj" />
     <ProjectReference Include="..\SignalGoTest.Models\SignalGoTest.Models.csproj" />
-    <ProjectReference Include="D:\Github\MVVMGo\MvvmGo\MvvmGo\MvvmGo.csproj" />
   </ItemGroup>
 
   <ItemGroup>
