@@ -80,10 +80,10 @@ _[Ss]cripts
 # angular web app
 
 # compiled output
-/angular-web-app/dist
-/angular-web-app/tmp
-/angular-web-app/out-tsc
+angular-web-app/dist
+angular-web-app/tmp
+angular-web-app/out-tsc
 
 # dependencies
-/angular-web-app/node_modules
+angular-web-app/node_modules
 
