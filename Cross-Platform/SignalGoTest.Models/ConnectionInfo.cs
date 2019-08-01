@@ -9,6 +9,22 @@ namespace SignalGoTest.Models
 {
     public class ConnectionInfo : PropertyChangedViewModel
     {
+        bool _IsRenameMode;
+        [JsonIgnore]
+        public bool IsRenameMode
+        {
+            get
+            {
+                return _IsRenameMode;
+            }
+
+            set
+            {
+                _IsRenameMode = value;
+                OnPropertyChanged(nameof(IsRenameMode));
+            }
+        }
+
         public string Name { get; set; }
         public string ServerAddress { get; set; }
         public string ServiceName { get; set; }
@@ -62,5 +78,6 @@ namespace SignalGoTest.Models
 
         [JsonIgnore]
         public ConnectionInfoViewHelper ConnectionInfoViewHelper { get; set; } = new ConnectionInfoViewHelper();
+
     }
 }

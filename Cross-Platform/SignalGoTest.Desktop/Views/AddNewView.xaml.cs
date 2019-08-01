@@ -11,6 +11,11 @@ namespace SignalGoTest.Desktop.Views
             this.InitializeComponent();
         }
 
+        public void ContextMenu_ContextMenuOpening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
+
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);

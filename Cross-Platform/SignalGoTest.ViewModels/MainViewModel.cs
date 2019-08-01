@@ -1,4 +1,5 @@
-﻿using MvvmGo.ViewModels;
+﻿using MvvmGo.Commands;
+using MvvmGo.ViewModels;
 using SignalGoTest.Models;
 using System;
 using System.IO;
@@ -12,11 +13,17 @@ namespace SignalGoTest.ViewModels
         public static MainViewModel This { get; set; }
         public MainViewModel()
         {
+            RenameCommand = new Command<ConnectionInfo>(Rename);
+            SaveRenameCommand = new Command<ConnectionInfo>(SaveRename);
+            RemoveCommand = new Command<ConnectionInfo>(Remove);
             Load();
             This = this;
         }
 
+
         public static readonly string AddNewName = "Add New...";
+
+
         public AppDataInfo CurrentAppData { get; set; } = new AppDataInfo()
         {
             Items = new System.Collections.ObjectModel.ObservableCollection<ConnectionInfo>()
@@ -27,6 +34,12 @@ namespace SignalGoTest.ViewModels
                  }
              }
         };
+
+        public Command<ConnectionInfo> RenameCommand { get; set; }
+        public Command<ConnectionInfo> SaveRenameCommand { get; set; }
+        public Command<ConnectionInfo> RemoveCommand { get; set; }
+        public Command OKCommand { get; set; }
+        public Command CancelCommand { get; set; }
 
         public void Save()
         {
@@ -61,6 +74,38 @@ namespace SignalGoTest.ViewModels
             {
 
             }
+        }
+
+
+        private void SaveRename(ConnectionInfo connectionInfo)
+        {
+            connectionInfo.IsRenameMode = false;
+            connectionInfo.OnPropertyChanged(nameof(connectionInfo.Name));
+            Save();
+        }
+
+        private void Rename(ConnectionInfo connectionInfo)
+        {
+            connectionInfo.IsRenameMode = true;
+        }
+
+
+        private void Remove(ConnectionInfo connectionInfo)
+        {
+            BusyContent = $"Do you want to remove \"{connectionInfo.Name}\"?";
+            IsBusy = true;
+            OKCommand = new Command(() =>
+            {
+                CurrentAppData.Items.Remove(connectionInfo);
+                Save();
+                IsBusy = false;
+            });
+            CancelCommand = new Command(() =>
+            {
+                IsBusy = false;
+            });
+            OnPropertyChanged(nameof(OKCommand));
+            OnPropertyChanged(nameof(CancelCommand));
         }
     }
 }

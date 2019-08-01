@@ -13,7 +13,7 @@ namespace SignalGoTest.Desktop.Views
                 JsonTemplateWindow jsonTemplateWindow = new JsonTemplateWindow();
                 jsonTemplateWindow.ZIndex = 100;
                 jsonTemplateWindow.Text = value;
-                await jsonTemplateWindow.ShowDialog();
+                await jsonTemplateWindow.ShowDialog(MainWindow.This);
             };
 
             InitializeComponent();

@@ -5,11 +5,11 @@
              xmlns:self="clr-namespace:SignalGo.Shared.Models;assembly=SignalGo.Shared">
   <Application.Resources>
     <cmd:CommandsViewModel x:Key="CommandsViewModel"/>
+    <converters:IsNullOrEmptyConverter x:Key="IsNullOrEmptyConverter"/>
   </Application.Resources>
-  
   <Application.Styles>
-    <StyleInclude Source="resm:Avalonia.Themes.Default.DefaultTheme.xaml?assembly=Avalonia.Themes.Default"/>
-    <StyleInclude Source="resm:Avalonia.Themes.Default.Accents.BaseLight.xaml?assembly=Avalonia.Themes.Default"/>
+    <StyleInclude Source="avares://Avalonia.Themes.Default/DefaultTheme.xaml"/>
+    <StyleInclude Source="avares://Avalonia.Themes.Default/Accents/BaseLight.xaml"/>
     <Style Selector="Button">
       <Setter Property="Foreground" Value="White"/>
       <Setter Property="Padding" Value="15,5,15,5"/>
@@ -41,16 +41,6 @@
         </ControlTemplate>
       </Setter>
     </Style>
-    <!--<Style Selector="TextBox">
-      <Setter Property="Foreground" Value="Red"/>
-      <Setter Property="Template">
-        <ControlTemplate>
-          <Border Background="White" BorderBrush="#409b7c" BorderThickness="1" CornerRadius="3">
-            <ContentPresenter Margin="{TemplateBinding Padding}" Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-          </Border>
-        </ControlTemplate>
-      </Setter>
-    </Style>-->
     <Style Selector="TextBox">
       <Setter Property="Background" Value="White"/>
       <Setter Property="Foreground" Value="#3a3a3a"/>
@@ -76,7 +66,7 @@
                              Path="UseFloatingWatermark"/>
                     <Binding RelativeSource="{RelativeSource TemplatedParent}"
                              Path="Text"
-                             Converter="{x:Static StringConverters.NotNullOrEmpty}"/>
+                             Converter="{StaticResource IsNullOrEmptyConverter}"/>
                   </MultiBinding>
                 </TextBlock.IsVisible>
               </TextBlock>
@@ -89,7 +79,7 @@
                     <TextBlock Name="watermark"
                                Opacity="0.5"
                                Text="{TemplateBinding Watermark}"
-                               IsVisible="{TemplateBinding Text, Converter={x:Static StringConverters.NullOrEmpty}}"/>
+                               IsVisible="{TemplateBinding Text, Converter={StaticResource IsNullOrEmptyConverter}}"/>
                     <TextPresenter Name="PART_TextPresenter"
                                    Text="{TemplateBinding Text, Mode=TwoWay}"
                                    CaretIndex="{TemplateBinding CaretIndex}"
@@ -112,7 +102,6 @@
               <MenuItem Header="Copy" Command="{Binding CopyCommand,Source={StaticResource CommandsViewModel}}" CommandParameter="{Binding ElementName=contextMenu}" />
               <MenuItem Header="Paste" Command="{Binding PasteCommand,Source={StaticResource CommandsViewModel}}" CommandParameter="{Binding ElementName=contextMenu}" />
               <MenuItem Header="Clear" Command="{Binding ClearCommand,Source={StaticResource CommandsViewModel}}" CommandParameter="{Binding ElementName=contextMenu}" />
-              <!--<MenuItem Header="Select All" Command="{Binding SelctAllCommand,Source={StaticResource CommandsViewModel}}" CommandParameter="{Binding ElementName=contextMenu}" />-->
             </ContextMenu>
           </Template>
         </Setter.Value>
@@ -145,7 +134,7 @@
                              Path="UseFloatingWatermark"/>
                     <Binding RelativeSource="{RelativeSource TemplatedParent}"
                              Path="Text"
-                             Converter="{x:Static StringConverters.NotNullOrEmpty}"/>
+                             Converter="{StaticResource IsNullOrEmptyConverter}"/>
                   </MultiBinding>
                 </TextBlock.IsVisible>
               </TextBlock>
@@ -158,7 +147,7 @@
                     <TextBlock Name="watermark"
                                Opacity="0.5"
                                Text="{TemplateBinding Watermark}"
-                               IsVisible="{TemplateBinding Text, Converter={x:Static StringConverters.NullOrEmpty}}"/>
+                               IsVisible="{TemplateBinding Text, Converter={StaticResource IsNullOrEmptyConverter}}"/>
                     <TextPresenter Name="PART_TextPresenter"
                                    Text="{TemplateBinding Text, Mode=TwoWay}"
                                    CaretIndex="{TemplateBinding CaretIndex}"

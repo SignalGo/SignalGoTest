@@ -1,23 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Github\MVVMGo\MvvmGo\MvvmGo.csproj" />
-    <ProjectReference Include="..\SignalGoTest.Models\SignalGoTest.Models.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="SignalGo.CodeGenerator">
-      <HintPath>..\..\..\SignalGoAddServiceReference\SignalGo.CodeGenerator\bin\Debug\netstandard2.0\SignalGo.CodeGenerator.dll</HintPath>
+    <ProjectReference Include="..\..\..\SignalGoAddServiceReference-net\SignalGo.CodeGenerator\SignalGo.CodeGenerator.csproj" >
       <Aliases>SignalGoCodeGenerator</Aliases>
-    </Reference>
+    </ProjectReference>
+    <ProjectReference Include="..\SignalGoTest.Models\SignalGoTest.Models.csproj" />
   </ItemGroup>
 
 </Project>

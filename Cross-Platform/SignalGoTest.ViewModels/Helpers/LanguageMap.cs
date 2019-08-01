@@ -1,17 +1,17 @@
 ﻿extern alias SignalGoCodeGenerator;
 
 using Newtonsoft.Json;
-using SignalGoCodeGenerator.SignalGo.CodeGenerator.Helpers;
-using SignalGoCodeGenerator.SignalGo.CodeGenerator.LanguageMaps;
-using SignalGoCodeGenerator.SignalGo.CodeGenerator.LanguageMaps.CsharpWebService;
-using SignalGoCodeGenerator.SignalGo.CodeGenerator.Models;
-using SignalGo.Shared.Models.ServiceReference;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
 using SignalGoTest.ViewModels.Models;
+using SignalGoCodeGenerator.SignalGo.CodeGenerator.Helpers;
+using SignalGoCodeGenerator.SignalGo.CodeGenerator.Models;
+using SignalGoCodeGenerator.SignalGo.CodeGenerator.LanguageMaps;
+using SignalGoCodeGenerator.SignalGo.CodeGenerator.LanguageMaps.CsharpWebService;
+using SignalGo.Shared.Models.ServiceReference;
 
 namespace SignalGoTest.ViewModels.Helpers
 {
@@ -104,9 +104,9 @@ namespace SignalGoTest.ViewModels.Helpers
             {
                 if (config.LanguageType > 0)
                     throw new NotSupportedException("this language for this type not supported now!");
-                XMLToCsharp xmlCsharp = new XMLToCsharp();
+                XMLToCsharp2 xmlCsharp = new XMLToCsharp2();
                 xmlCsharp.Generate(config.ServiceUrl);
-                string csharpCode = xmlCsharp.GeneratesharpCode();
+                string csharpCode = xmlCsharp.GeneratesharpCode(config.ServiceNameSpace);
                 fullFilePath = Path.Combine(servicePath, "Reference.cs");
                 StringBuilder builder = new StringBuilder();
                 builder.AppendLine($"namespace {config.ServiceNameSpace}");
@@ -120,7 +120,7 @@ namespace SignalGoTest.ViewModels.Helpers
 
         public override ProjectInfoBase GetActiveProject()
         {
-            return new ProjectInfo() { ProjectItemsInfoBase = new ProjectItemsInfo() {  } };
+            return new ProjectInfo() {   ProjectItemsInfoBase  = new ProjectItemsInfo() {  } };
         }
 
         public override List<ProjectItemInfoBase> GetAllProjectItemsWithoutServices(ProjectItemsInfoBase projectBase)

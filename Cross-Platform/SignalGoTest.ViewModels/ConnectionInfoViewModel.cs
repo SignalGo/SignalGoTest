@@ -146,6 +146,8 @@ namespace SignalGoTest.ViewModels
         {
             get
             {
+                if (CurrentConnectionInfo == null)
+                    return false;
                 return CurrentConnectionInfo.ConnectionInfoViewHelper.Provider.IsConnected;
             }
         }

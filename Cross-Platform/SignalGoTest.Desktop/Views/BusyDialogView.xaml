@@ -21,12 +21,12 @@
             <ProgressBar x:Name="CurrentProgress" IsIndeterminate="true" Grid.Row="1"/>
           </Grid>
           <Grid Grid.Row="1" x:Name="ButtonsGrid" IsVisible="False">
-            <!--<Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions>
               <ColumnDefinition Width="*"/>
               <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>-->
-            <Button Content="Ok" Margin="0,5,0,0"/>
-            <!--<Button Grid.Column="1" IsVisible="False" Margin="0,5,0,0" Content="Cancel"/>-->
+            </Grid.ColumnDefinitions>
+            <Button Name="OkButton" Content="Ok" Margin="0,5,0,0"/>
+            <Button Name="CancelButton" Grid.Column="1" IsVisible="False" Margin="5,5,0,0" Content="Cancel"/>
           </Grid>
         </Grid>
       </Border>

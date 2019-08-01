@@ -1,48 +1,77 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SignalGoTest.Desktop.Views"
+        xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+        xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
         xmlns:viewmodels="clr-namespace:SignalGoTest.ViewModels;assembly=SignalGoTest.ViewModels"
+        xmlns:conv="clr-namespace:SignalGoTest.Desktop.Converters"
         Title="SignalGoTest.Desktop" FontFamily="Tahoma">
+  <Window.Resources>
+    <viewmodels:MainViewModel x:Key="MainViewModel"/>
+    <conv:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+  </Window.Resources>
   <Window.DataContext>
-    <viewmodels:MainViewModel/>
+    <Binding Source="{StaticResource MainViewModel}"/>
   </Window.DataContext>
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="auto"/>
-      <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
-    <Menu>
-      <MenuItem Header="File">
-        <MenuItem x:Name="clearHistoriesMenu" Header="Clear Histories"/>
-      </MenuItem>
-    </Menu>
-    <Grid Grid.Row="1">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="auto"/>
-        <ColumnDefinition Width="*"/>
-      </Grid.ColumnDefinitions>
-      <ListBox Items="{Binding CurrentAppData.Items}" SelectionChanged="lslConnections_SelectionChanged" BorderThickness="1" Name="ListConnections">
-        <ListBox.ItemTemplate>
-          <DataTemplate>
-            <Grid>
-              <TextBlock Text="{Binding Name}" Margin="5"/>
-            </Grid>
-          </DataTemplate>
-        </ListBox.ItemTemplate>
-      </ListBox>
-      <local:ConnectionInfoView Grid.Column="1" Name="ConnectionView" IsVisible="false"/>
-      <local:AddNewView Grid.Column="1" Name="AddNewView" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="300" />
-    </Grid>
-    <Grid VerticalAlignment="Center" Height="30" Margin="20" IsVisible="false">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="auto"/>
-        <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="auto"/>
-      </Grid.ColumnDefinitions>
-      <TextBlock Text="Name:" VerticalAlignment="Center" />
-      <TextBox x:Name="txtTabName" Grid.Column="1" Margin="10,0,10,0"/>
-      <Button x:Name="btnAdd" Content="Add" Grid.Column="2" Padding="20,0,20,0"/>
-    </Grid>
-  </Grid>
-
+  <local:BusyDialogView DataContext="{StaticResource MainViewModel}" OkCommand="{Binding OKCommand}" CancelCommand="{Binding CancelCommand}" IsBusy="{Binding IsBusy}" IsAlert="true" ShowCancel="true" Message="{Binding BusyContent}">
+    <local:BusyDialogView.Child>
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="auto"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu>
+          <MenuItem Header="File">
+            <MenuItem x:Name="clearHistoriesMenu" Header="Clear Histories"/>
+          </MenuItem>
+        </Menu>
+        <Grid Grid.Row="1">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <ListBox Items="{Binding CurrentAppData.Items}" SelectionChanged="lslConnections_SelectionChanged" BorderThickness="1" Name="ListConnections">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid Background="#01ffffff">
+                  <Grid>
+                    <TextBlock Name="txtName" Text="{Binding Name}" Margin="5" IsVisible="{Binding IsRenameMode,Converter={StaticResource InverseBooleanConverter}}"/>
+                    <StackPanel Orientation="Horizontal" Name="EditGrid" IsVisible="{Binding IsRenameMode}">
+                      <TextBox Text="{Binding Name}" Margin="5"/>
+                      <Button Content="Save" Command="{Binding SaveRenameCommand,Source={StaticResource MainViewModel}}" Height="25" CommandParameter="{Binding}"/>
+                    </StackPanel>
+                  </Grid>
+                  <Grid.ContextMenu>
+                    <ContextMenu Name="myMenu">
+                      <i:Interaction.Behaviors>
+                        <ia:DataTriggerBehavior  Binding="{Binding Name}" Value="Add New..." >
+                          <ia:ChangePropertyAction TargetObject="{Binding #myMenu}" PropertyName="IsVisible" Value="false"/>
+                        </ia:DataTriggerBehavior>
+                      </i:Interaction.Behaviors>
+                      <MenuItem Header="Rename" Command="{Binding RenameCommand,Source={StaticResource MainViewModel}}" CommandParameter="{Binding}"/>
+                      <MenuItem Header="Delete" Command="{Binding RemoveCommand,Source={StaticResource MainViewModel}}" CommandParameter="{Binding}" />
+                    </ContextMenu>
+                  </Grid.ContextMenu>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <local:ConnectionInfoView Grid.Column="1" Name="ConnectionView" IsVisible="false"/>
+          <local:AddNewView Grid.Column="1" Name="AddNewView" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="300" />
+        </Grid>
+        <Grid VerticalAlignment="Center" Height="30" Margin="20" IsVisible="false">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+          </Grid.ColumnDefinitions>
+          <TextBlock Text="Name:" VerticalAlignment="Center" />
+          <TextBox x:Name="txtTabName" Grid.Column="1" Margin="10,0,10,0"/>
+          <Button x:Name="btnAdd" Content="Add" Grid.Column="2" Padding="20,0,20,0"/>
+        </Grid>
+      </Grid>
+    </local:BusyDialogView.Child>
+  </local:BusyDialogView>
 </Window>
