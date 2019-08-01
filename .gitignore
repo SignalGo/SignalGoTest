@@ -9,7 +9,7 @@
 *.dll.config
 *.cache
 *.suo
-# Include dlls if they’re in the NuGet packages directory
+# Include dlls if theyï¿½re in the NuGet packages directory
 !/packages/*/lib/*.dll
 !/packages/*/lib/*/*.dll
 # Include dlls if they're in the CommonReferences directory
@@ -38,7 +38,7 @@ TestResults/
 ############
 # Packages #
 ############
-# it’s better to unpack these files and commit the raw source
+# itï¿½s better to unpack these files and commit the raw source
 # git has its own built in compression methods
 *.7z
 *.dmg
@@ -87,36 +87,3 @@ _[Ss]cripts
 # dependencies
 /angular-web-app/node_modules
 
-# profiling files
-/angular-web-app/chrome-profiler-events.json
-/angular-web-app/speed-measure-plugin.json
-
-# IDEs and editors
-/angular-web-app/.idea
-/angular-web-app/.project
-/angular-web-app/.classpath
-/angular-web-app/.c9/
-/angular-web-app/*.launch
-/angular-web-app/.settings/
-/angular-web-app/*.sublime-workspace
-
-# IDE - VSCode
-/angular-web-app/.vscode/*
-/angular-web-app/!.vscode/settings.json
-/angular-web-app/!.vscode/tasks.json
-/angular-web-app/!.vscode/launch.json
-/angular-web-app/!.vscode/extensions.json
-
-# misc
-/angular-web-app/.sass-cache
-/angular-web-app/connect.lock
-/angular-web-app/coverage
-/angular-web-app/libpeerconnection.log
-/angular-web-app/npm-debug.log
-/angular-web-app/yarn-error.log
-/angular-web-app/testem.log
-/angular-web-app/typings
-
-# System Files
-/angular-web-app/.DS_Store
-/angular-web-app/Thumbs.db
