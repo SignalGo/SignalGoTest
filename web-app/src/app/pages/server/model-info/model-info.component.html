@@ -1,0 +1,13 @@
+<h1>{{model.Name}}</h1>
+<p *ngIf="model.Comment">
+  {{model.Comment}}
+</p>
+<h3>parameters</h3>
+<p *ngIf="parameters.length == 0">this method has no parameter.</p>
+<mat-list-item *ngFor="let p of parameters">
+  <p matLine>
+    <span style="width: 300px; display: inline-block;"> {{p.Name}} </span>
+    <span style="flex: none; font-weight: 300; opacity: 0.5">{{p.Type}}</span>
+  </p>
+  <mat-divider></mat-divider>
+</mat-list-item>
