@@ -1,0 +1,49 @@
+<mat-sidenav-container>
+  <mat-sidenav mode="over" #serverListDrawer>
+    <mat-nav-list>
+      <a mat-list-item *ngFor="let server of serverManager.servers" [routerLink]="['/server', server.id]" (click)="serverListDrawer.close()">
+        <h3 matLine style="font-size: 18px; font-weight: bold;">
+          {{server.name}}
+        </h3>
+        <p matLine style="opacity: 0.5">
+          {{server.url}}
+        </p>
+        <mat-divider></mat-divider>
+      </a>
+      <a mat-list-item [routerLink]="['/']">
+        <h3 matLine style="font-size: 18px; font-weight: bold;">
+          Add new server
+        </h3>
+        <mat-icon>add</mat-icon>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content style="padding: 0px; display: flex; flex-direction: column;">
+    <mat-toolbar color="primary" class="mat-elevation-z1">
+      <mat-toolbar-row>
+        <button mat-icon-button (click)="serverListDrawer.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span style="flex: 1">{{sd.server?.name}}</span>
+        <button mat-icon-button (click)="historyDrawer.toggle()">
+          <mat-icon>history</mat-icon>
+        </button>
+      </mat-toolbar-row>
+    </mat-toolbar>
+    <div id="container">
+      <mat-drawer-container class="example-container">
+        <mat-drawer mode="side" opened [disableClose]="true">
+          <side-nav *ngIf="sd.data"></side-nav>
+        </mat-drawer>
+        <mat-drawer-content>
+          <main *ngIf="sd.data">
+            <router-outlet></router-outlet>
+          </main>
+        </mat-drawer-content>
+        <mat-drawer #historyDrawer mode="side" opened position="end" style="width: 320px; overflow-x: hidden">
+          <history-nav *ngIf="sd.data"></history-nav>
+        </mat-drawer>
+      </mat-drawer-container>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

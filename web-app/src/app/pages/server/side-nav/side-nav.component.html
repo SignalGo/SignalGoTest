@@ -1,0 +1,49 @@
+<div style="padding: 8px;">
+  <input [matAutocomplete]="auto" #searchInput id="search" type="search" placeholder="search (ctrl + shift + f)" [(ngModel)]="search">
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="autoCompleteSelect($event.option.value)">
+    <ng-container *ngFor="let controller of webAPIs.HttpControllers">
+      <mat-option [value]="method" *ngFor="let method of controller.Methods | search : search : 'MethodName'">
+        <mat-icon matListIcon style="color: #f48fb1; margin-right: 4px;">flash_on</mat-icon>
+        <span style="font-size: 12px;">
+          {{controller.Url}}/{{method.MethodName}}
+        </span>
+      </mat-option>
+    </ng-container>
+    <mat-option [value]="model" *ngFor="let model of models.Models | search : search : 'Name'">
+      <mat-icon style="color: #ffe082; margin-right: 4px;">note</mat-icon>
+      <span style="font-size: 12px;">
+        {{model.Name}}
+      </span>
+    </mat-option>
+  </mat-autocomplete>
+</div>
+<mat-nav-list dense style="overflow-x: hidden;" class="noselect">
+  <h3 matRipple style="color: #f48fb1" mat-subheader>
+    web apis
+  </h3>
+  <ng-container *ngFor="let controller of webAPIs.HttpControllers">
+    <a mat-list-item (click)="toggleExpand(controller)">
+      <mat-icon matListIcon *ngIf="!controller.IsExpanded">folder</mat-icon>
+      <mat-icon matListIcon *ngIf="controller.IsExpanded">folder_open</mat-icon>
+      <p>{{controller.Url}}</p>
+    </a>
+    <mat-nav-list *ngIf="controller.IsExpanded" dense>
+      <a mat-list-item style="padding-left: 12px;" *ngFor="let method of controller.Methods" [routerLink]="['/server', sd.server.id, 'method', method.Id]" (click)="search = undefined">
+        <mat-icon matListIcon style="color: #f48fb1">flash_on</mat-icon>
+        <p>{{method.MethodName}}</p>
+      </a>
+    </mat-nav-list>
+  </ng-container>
+  <mat-divider></mat-divider>
+  <h3 matRipple style="color: #ffe082" mat-subheader>
+    models
+  </h3>
+  <ng-container *ngFor="let model of models.Models">
+    <mat-list-item [routerLink]="['/server', sd.server.id, 'model', model.Id]">
+      <mat-icon matListIcon style="color: #ffe082;">note</mat-icon>
+      <p>{{model.Name}}</p>
+    </mat-list-item>
+  </ng-container>
+</mat-nav-list>
+
+<ng-keyboard-shortcuts [shortcuts]="shortcuts"></ng-keyboard-shortcuts>

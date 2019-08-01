@@ -1,0 +1,39 @@
+<div>
+  <form (ngSubmit)="connect()" [formGroup]="form" class="flex-column" style="justify-content: center; align-items: center; height: 100vh;">
+    <img src="assets/images/logo-type.png">
+    <mat-tab-group style="width: 400px;">
+      <mat-tab label="server list">
+        <br>
+        <p style="text-align: center;" *ngIf="serverManager.servers?.length == 0">there is no server in list</p>
+        <mat-nav-list>
+          <a mat-list-item *ngFor="let server of serverManager.servers" [routerLink]="['/server', server.id]">
+            <h3 matLine>{{server.name}}</h3>
+            <p matLine>{{server.url}}</p>
+            <mat-divider></mat-divider>
+          </a>
+        </mat-nav-list>
+      </mat-tab>
+      <mat-tab label="new server"> 
+        <br>
+        <div class="flex-column">
+          <mat-form-field appearance="fill" color="accent">
+            <mat-label>name of server</mat-label>
+            <input matInput formControlName="name">
+        
+            <mat-error *ngIf="form.controls['name'].errors">at least 3 character and just use alphabet (a-z or A-Z) and space
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill" color="accent">
+            <mat-label>url of signalGo server</mat-label>
+            <input matInput formControlName="url">
+        
+            <mat-error *ngIf="form.controls['url'].errors?.required">required field</mat-error>
+          </mat-form-field>
+          <br>
+          <button mat-raised-button *ngIf="!loading" [disabled]="!form.valid" color="accent" type="submit">register</button>
+          <mat-spinner [diameter]="36" color="accent" *ngIf="loading"></mat-spinner>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </form>
+</div>

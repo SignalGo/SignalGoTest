@@ -79,4 +79,44 @@ _[Ss]cripts
 
 # angular web app
 
+# compiled output
+web-app/dist
+web-app/tmp
+web-app/out-tsc
 
+# dependencies
+web-app/node_modules
+
+# profiling files
+web-app/chrome-profiler-events.json
+web-app/speed-measure-plugin.json
+
+# IDEs and editors
+web-app/.idea
+web-app/.project
+web-app/.classpath
+web-app/.c9/
+web-app/*.launch
+web-app/.settings/
+web-app/*.sublime-workspace
+
+# IDE - VSCode
+web-app/.vscode/*
+web-app/!.vscode/settings.json
+web-app/!.vscode/tasks.json
+web-app/!.vscode/launch.json
+web-app/!.vscode/extensions.json
+
+# misc
+web-app/.sass-cache
+web-app/connect.lock
+web-app/coverage
+web-app/libpeerconnection.log
+web-app/npm-debug.log
+web-app/yarn-error.log
+web-app/testem.log
+web-app/typings
+
+# System Files
+web-app/.DS_Store
+web-app/Thumbs.db

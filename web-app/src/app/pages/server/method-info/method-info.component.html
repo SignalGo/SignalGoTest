@@ -1,0 +1,55 @@
+<h1>{{method.MethodName}}</h1>
+<p *ngIf="method.Comment">
+  {{method.Comment}}
+</p>
+<mat-tab-group>
+  <mat-tab label="test api"> 
+    <div style="padding: 32px 8px;">
+        <form (ngSubmit)="call()" #form="ngForm">
+          <p *ngIf="parameters.length == 0">this method has no parameter. you can call it just by pressing send button.</p>
+          <ng-container *ngFor="let p of parameters; let i = index;">
+            <mat-form-field appearance="fill" style="display: block; width: 300px;" *ngIf="!p.hidden">
+              <mat-label>{{p.Name}}</mat-label>
+              <input [type]="p.type" matInput [attr.autofocus]="i == 0 ? '' : null" [(ngModel)]="callParams[p.Name]" name="{{p.Name}}">
+            </mat-form-field>
+          </ng-container>
+          <button [disabled]="calling" mat-flat-button color="accent" type="submit">
+            send
+          </button>
+          <button mat-button type="reset" (click)="response = undefined; error = undefined;">
+            clear
+          </button>
+        </form>
+        <div *ngIf="response" style="padding: 4px 16px; background: #C8E6C9; margin: 16px auto; border-radius: 8px;">
+          <h3>response:</h3>
+          <p style="white-space: pre;">
+            {{response | json}}
+          </p>
+        </div>
+        <div *ngIf="error" style="padding: 4px 16px; background: #ffcdd2; margin: 16px auto; border-radius: 8px;">
+          <h3>error:</h3>
+          <p style="white-space: pre;">
+            {{error | json}}
+          </p>
+        </div>
+    </div>
+  </mat-tab>
+  <mat-tab label="info">
+    <div style="padding: 32px 8px;">
+      <h3>parameters</h3>
+      <p *ngIf="parameters.length == 0">this method has no parameter.</p>
+      <mat-list-item *ngFor="let p of parameters">
+        <p matLine>
+          <span style="width: 200px; display: inline-block;"> {{p.Name}} </span>
+          <span style="flex: none; font-weight: 300; opacity: 0.5">{{p.Type}}</span>
+        </p>
+        <mat-divider></mat-divider>
+      </mat-list-item>
+      <h3>return type</h3>
+      <p style="font-size: 18px; opacity: 0.5; font-weight: 300;">
+        {{method.ReturnType}}
+      </p>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+

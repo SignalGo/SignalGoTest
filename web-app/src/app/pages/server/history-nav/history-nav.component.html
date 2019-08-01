@@ -1,0 +1,61 @@
+<mat-toolbar style="height: 40px; min-height: 40px;">
+  <mat-toolbar-row>
+    <span style="flex: 1"> history </span>
+    <button mat-icon-button *ngIf="!favs" (click)="favs = true">
+      <mat-icon>favorite_border</mat-icon>
+    </button>
+    <button mat-icon-button *ngIf="favs" (click)="favs = false">
+      <mat-icon>favorite</mat-icon>
+    </button>
+  </mat-toolbar-row>
+</mat-toolbar>
+<mat-nav-list dense [@filterAnimation]="historyService.history?.length" *ngIf="!favs">
+  <ng-container *ngFor="let h of historyService.history; let i = index;">
+    <a mat-list-item *ngIf="i < 50" [routerLink]="['/server', h.serverId, 'method', h.methodId, h.id]">
+      <h3 matLine style="font-weight: bold;" [style.color]="h.error ? 'red' : 'black'">{{h.name}}</h3>
+      <p matLine style="opacity: 0.5; font-size: 10px;">{{stringify(h.body)}}</p>
+      <button mat-icon-button (click)="call(h); $event.stopPropagation(); $event.preventDefault()">
+        <mat-icon>reply</mat-icon>
+      </button>
+      <button mat-icon-button *ngIf="!h.isFav" (click)="toggleFav(h, $event)">
+        <mat-icon>favorite_border</mat-icon>
+      </button>
+      <button mat-icon-button *ngIf="h.isFav" (click)="toggleFav(h, $event)">
+        <mat-icon>favorite</mat-icon>
+      </button>
+      <!-- <mat-menu #menu="matMenu">
+        <div style="padding: 0px 8px;">
+          <p>
+            {{stringify(h.response, null, 2)}}
+          </p>
+        </div>
+      </mat-menu> -->
+      <mat-divider></mat-divider>
+    </a>
+  </ng-container>
+</mat-nav-list>
+<mat-nav-list dense [@filterAnimation]="historyService.favs?.length" *ngIf="favs">
+  <ng-container *ngFor="let h of historyService.favs;">
+    <a mat-list-item [routerLink]="['/server', h.serverId, 'method', h.methodId, h.id]">
+      <h3 matLine style="font-weight: bold;">{{h.name}}</h3>
+      <p matLine style="opacity: 0.5; font-size: 10px;">{{stringify(h.body)}}</p>
+      <button mat-icon-button (click)="call(h); $event.stopPropagation(); $event.preventDefault()">
+        <mat-icon>reply</mat-icon>
+      </button>
+      <button mat-icon-button *ngIf="!h.isFav" (click)="toggleFav(h, $event)">
+        <mat-icon>favorite_border</mat-icon>
+      </button>
+      <button mat-icon-button *ngIf="h.isFav" (click)="toggleFav(h, $event)">
+        <mat-icon>favorite</mat-icon>
+      </button>
+      <!-- <mat-menu #menu="matMenu">
+        <div style="padding: 0px 8px;">
+          <p>
+            {{stringify(h.response, null, 2)}}
+          </p>
+        </div>
+      </mat-menu> -->
+      <mat-divider></mat-divider>
+    </a>
+  </ng-container>
+</mat-nav-list>
