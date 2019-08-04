@@ -61,6 +61,8 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.8.1" />
     <PackageReference Include="Avalonia.Desktop" Version="0.8.1" />
+    <PackageReference Include="Avalonia.Xaml.Interactions" Version="0.8.0" />
+    <PackageReference Include="Avalonia.Xaml.Interactivity" Version="0.8.0" />
     <PackageReference Include="NSubsys" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
