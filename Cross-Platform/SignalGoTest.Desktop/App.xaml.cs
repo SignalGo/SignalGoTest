@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
 namespace SignalGoTest.Desktop
@@ -10,9 +11,14 @@ namespace SignalGoTest.Desktop
             AvaloniaXamlLoader.Load(this);
         }
 
-        public void ContextMenu_Initialized(object sender, System.EventArgs e)
+        public override void OnFrameworkInitializationCompleted()
         {
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.MainWindow = new MainWindow();
+            }
 
+            base.OnFrameworkInitializationCompleted();
         }
     }
 }

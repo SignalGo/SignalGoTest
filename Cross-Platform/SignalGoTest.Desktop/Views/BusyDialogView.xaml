@@ -1,5 +1,7 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" FontFamily="Tahoma">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SignalGoTest.Desktop.Views.BusyDialogView"
+             FontFamily="Tahoma">
   <Grid>
     <Grid>
       <Grid x:Name="ChildGrid">

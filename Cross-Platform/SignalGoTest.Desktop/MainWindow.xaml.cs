@@ -28,6 +28,7 @@ namespace SignalGoTest.Desktop
             //Avalonia.Markup.Xaml.Templates.DataTemplate a;
             //a.DataType
             ListBox ListConnections = this.FindControl<ListBox>("ListConnections");
+            ListConnections.SelectionChanged += lslConnections_SelectionChanged;
             ListConnections.SelectedIndex = 1;
             Closing += MainWindow_Closing;
         }

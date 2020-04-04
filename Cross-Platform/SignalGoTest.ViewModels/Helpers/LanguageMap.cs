@@ -10,7 +10,6 @@ using SignalGoTest.ViewModels.Models;
 using SignalGoCodeGenerator.SignalGo.CodeGenerator.Helpers;
 using SignalGoCodeGenerator.SignalGo.CodeGenerator.Models;
 using SignalGoCodeGenerator.SignalGo.CodeGenerator.LanguageMaps;
-using SignalGoCodeGenerator.SignalGo.CodeGenerator.LanguageMaps.CsharpWebService;
 using SignalGo.Shared.Models.ServiceReference;
 
 namespace SignalGoTest.ViewModels.Helpers
@@ -84,7 +83,7 @@ namespace SignalGoTest.ViewModels.Helpers
                     else if (config.LanguageType == 2)
                     {
                         fullFilePath = Path.Combine(servicePath, "Reference.cs");
-                        File.WriteAllText(fullFilePath, BlazorLanguageMap.CalculateMapData(namespaceReferenceInfo, config.ServiceNameSpace), Encoding.UTF8);
+                        File.WriteAllText(fullFilePath, BlazorLanguageMap.CalculateMapData(namespaceReferenceInfo, config.ServiceNameSpace, config), Encoding.UTF8);
                     }
                     //java android
                     else if (config.LanguageType == 3)

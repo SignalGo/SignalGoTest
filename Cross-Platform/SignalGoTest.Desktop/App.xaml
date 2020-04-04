@@ -1,5 +1,6 @@
 ﻿<Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SignalGoTest.Desktop.App"
              xmlns:converters="clr-namespace:SignalGoTest.Desktop.Converters"
              xmlns:cmd="clr-namespace:SignalGoTest.Desktop.Helpers"
              xmlns:self="clr-namespace:SignalGo.Shared.Models;assembly=SignalGo.Shared">

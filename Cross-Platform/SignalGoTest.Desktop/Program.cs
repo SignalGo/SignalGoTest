@@ -8,7 +8,8 @@ namespace SignalGoTest.Desktop
     {
         static void Main(string[] args)
         {
-            BuildAvaloniaApp().Start<MainWindow>();
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            //BuildAvaloniaApp().Start<MainWindow>();
         }
 
         public static AppBuilder BuildAvaloniaApp()

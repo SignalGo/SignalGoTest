@@ -1,5 +1,6 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SignalGoTest.Desktop.Views.ConnectionInfoView"
              xmlns:self="clr-namespace:SignalGo.Shared.Models;assembly=SignalGo.Shared"
              xmlns:local="clr-namespace:SignalGoTest.Desktop.Views"
              xmlns:conv="clr-namespace:SignalGoTest.Desktop.Converters"
@@ -471,7 +472,7 @@
                 <TextBlock Foreground="Black" Text="Server NameSpace:  (example: &quot;MyService&quot;)" Margin="0,10,10,0"/>
                 <TextBox Text="{Binding CurrentConnectionInfo.CodeGeneratorInfo.ServerNameSpace}" Grid.Row="1" Margin="0,10,0,0"/>
                 <TextBlock Foreground="Black" Grid.Row="2" Text="Language Type:" Margin="0,10,10,0"/>
-                <DropDown x:Name="cboLanguage" Background="White" Foreground="Black" Grid.Row="3" SelectedIndex="{Binding CurrentConnectionInfo.CodeGeneratorInfo.LanguageType,Converter={StaticResource EnumToIntegerConverter},Mode=Twoway}" Margin="0,10,0,0">
+                <DropDown x:Name="cboLanguage" Background="White" Foreground="Black" Grid.Row="3" SelectedIndex="{Binding CurrentConnectionInfo.CodeGeneratorInfo.LanguageType,Converter={StaticResource EnumToIntegerConverter},Mode=TwoWay}" Margin="0,10,0,0">
                   <DropDownItem Content="C#" Background="White"/>
                   <DropDownItem Content="Angular Type Script" Background="White"/>
                   <DropDownItem Content="C# Blazor" Background="White"/>
@@ -479,7 +480,7 @@
                   <DropDownItem Content="Swift" Background="White"/>
                 </DropDown>
                 <TextBlock Foreground="Black" Grid.Row="4" Text="Service Type:" Margin="0,10,10,0"/>
-                <DropDown x:Name="cboServiceType" Background="White" Foreground="Black" Grid.Row="5" SelectedIndex="{Binding CurrentConnectionInfo.CodeGeneratorInfo.ServiceType,Converter={StaticResource EnumToIntegerConverter},Mode=Twoway}" Margin="0,10,0,0">
+                <DropDown x:Name="cboServiceType" Background="White" Foreground="Black" Grid.Row="5" SelectedIndex="{Binding CurrentConnectionInfo.CodeGeneratorInfo.ServiceType,Converter={StaticResource EnumToIntegerConverter},Mode=TwoWay}" Margin="0,10,0,0">
                   <DropDownItem Content="SignalGo" Background="White"/>
                   <DropDownItem Content="Soap Web Service" Background="White"/>
                 </DropDown>
