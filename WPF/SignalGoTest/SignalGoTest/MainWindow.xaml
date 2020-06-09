@@ -34,7 +34,7 @@
 			</ListBox>
 			<local:ConnectionInfo Grid.Column="1" DataContext="{Binding ElementName=lslConnections,Path=SelectedItem}"/>
 		</Grid>
-		<Grid VerticalAlignment="Center" Height="30" Margin="20" Visibility="Collapsed">
+		<Grid VerticalAlignment="Center" Height="30" Margin="20">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="auto"/>
 				<ColumnDefinition Width="*"/>
