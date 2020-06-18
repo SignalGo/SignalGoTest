@@ -494,7 +494,7 @@
 														</StackPanel>
 													</DataTemplate>
 												</TabItem.Resources>
-												<TreeView Name="jsonDataTreeView">
+                                                <TreeView Name="jsonDataTreeView" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling">
 													<TreeView.ItemContainerStyle>
 														<Style TargetType="{x:Type TreeViewItem}">
 															<Setter Property="IsExpanded" Value="True" />
@@ -503,7 +503,7 @@
 												</TreeView>
 											</TabItem>
 											<TabItem x:Name="rawDataTab" Header="Raw Data">
-												<TextBox x:Name="txtReponse" VerticalScrollBarVisibility="Auto" Margin="0,5,0,0" AcceptsReturn="True" TextWrapping="Wrap"/>
+												<RichTextBox x:Name="txtReponse" VerticalScrollBarVisibility="Auto" Margin="0,5,0,0" AcceptsReturn="True"/>
 											</TabItem>
 										</TabControl>
                                         <Button x:Name="btnToString" Click="btnToString_Click" Content="ToString" Height="23" Padding="10,0,10,0" Margin="0,5,0,0" Grid.Row="5"/>

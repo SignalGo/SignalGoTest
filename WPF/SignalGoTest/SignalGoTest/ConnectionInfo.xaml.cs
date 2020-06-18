@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace SignalGoTest
@@ -551,7 +552,7 @@ namespace SignalGoTest
                             history.Insert(0, new HistoryCallInfo() { CallDateTime = DateTime.Now, MethodName = sendMethod.MethodName, Request = FormatJson(request), Response = response });
                             lstHistoryCalls.ItemsSource = null;
                             lstHistoryCalls.ItemsSource = history;
-                            txtReponse.Text = response;
+                            SetText(txtReponse, response);
                             ShowInTreeView(response, false);
                             btnSave_Click(null, null);
                         }));
@@ -560,7 +561,7 @@ namespace SignalGoTest
                     {
                         Dispatcher.Invoke(new Action(() =>
                         {
-                            txtReponse.Text = ex.Message;
+                            SetText(txtReponse, ex.Message);
                             ShowInTreeView(ex.Message, true);
                         }));
                     }
@@ -568,7 +569,7 @@ namespace SignalGoTest
                     {
                         Dispatcher.Invoke(new Action(() =>
                         {
-                            txtReponse.Text = ex.Message + Environment.NewLine + ex.StackTrace;
+                            SetText(txtReponse, ex.Message + Environment.NewLine + ex.StackTrace);
                             ShowInTreeView(ex.Message, true);
                         }));
                     }
@@ -585,7 +586,17 @@ namespace SignalGoTest
             }
         }
 
-        void ShowInTreeView(string json,bool isException)
+        void SetText(RichTextBox richTextBox, string text)
+        {
+            richTextBox.Document.Blocks.Clear();
+            richTextBox.Document.Blocks.Add(new Paragraph(new Run(text)));
+        }
+        string GetText(RichTextBox richTextBox)
+        {
+            return ((Run)((Paragraph)richTextBox.Document.Blocks.First()).Inlines.First()).Text;
+        }
+
+        void ShowInTreeView(string json, bool isException)
         {
             if (isException)
             {
@@ -725,11 +736,11 @@ namespace SignalGoTest
         {
             try
             {
-                txtReponse.Text = JsonConvert.DeserializeObject<string>(txtReponse.Text);
+                SetText(txtReponse, JsonConvert.DeserializeObject<string>(GetText(txtReponse)));
             }
             catch (Exception ex)
             {
-                txtReponse.Text = ex.ToString();
+                SetText(txtReponse, ex.ToString());
             }
         }
 
