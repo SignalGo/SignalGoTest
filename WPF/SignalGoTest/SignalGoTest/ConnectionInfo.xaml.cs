@@ -433,6 +433,7 @@ namespace SignalGoTest
         {
             try
             {
+                ConnectionData connectionData = (ConnectionData)DataContext;
                 if (lstRequests.SelectedItem == null || !(lstRequests.SelectedItem is ServiceDetailsRequestInfo))
                     return;
                 btnSend.IsEnabled = false;
@@ -549,9 +550,12 @@ namespace SignalGoTest
                             if (history == null)
                                 history = new ObservableCollection<SignalGoTest.HistoryCallInfo>();
                             response = response == null ? "Sent success but result is null" : FormatJson(response);
-                            history.Insert(0, new HistoryCallInfo() { CallDateTime = DateTime.Now, MethodName = sendMethod.MethodName, Request = FormatJson(request), Response = response });
-                            lstHistoryCalls.ItemsSource = null;
-                            lstHistoryCalls.ItemsSource = history;
+                            if (connectionData.IsHistoryEnabled)
+                            {
+                                history.Insert(0, new HistoryCallInfo() { CallDateTime = DateTime.Now, MethodName = sendMethod.MethodName, Request = FormatJson(request), Response = response });
+                                lstHistoryCalls.ItemsSource = null;
+                                lstHistoryCalls.ItemsSource = history;
+                            }
                             SetText(txtReponse, response);
                             ShowInTreeView(response, false);
                             btnSave_Click(null, null);

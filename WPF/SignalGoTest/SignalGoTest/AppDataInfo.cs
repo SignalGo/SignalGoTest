@@ -10,6 +10,7 @@ namespace SignalGoTest
 
     public class ConnectionData
     {
+        public bool IsHistoryEnabled { get; set; }
         public string Name { get; set; }
         public string ServerAddress { get; set; }
         public string ServiceName { get; set; }
