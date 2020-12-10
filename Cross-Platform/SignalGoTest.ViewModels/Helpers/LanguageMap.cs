@@ -67,16 +67,16 @@ namespace SignalGoTest.ViewModels.Helpers
                     //angular
                     else if (config.LanguageType == 1)
                     {
-                        string oldPath = Path.Combine(servicePath, "OldAngular");
-                        string newPath = Path.Combine(servicePath, "NewAngular");
-                        fullFilePath = Path.Combine(oldPath, "Reference.ts");
-                        if (!Directory.Exists(oldPath))
-                            Directory.CreateDirectory(oldPath);
-                        TypeScriptLanguageMap typeScriptLanguageMap = new TypeScriptLanguageMap();
-                        File.WriteAllText(fullFilePath, typeScriptLanguageMap.CalculateMapData(oldPath, namespaceReferenceInfo, config.ServiceNameSpace), Encoding.UTF8);
+                        //string oldPath = Path.Combine(servicePath, "OldAngular");
+                        //string newPath = Path.Combine(servicePath, "NewAngular");
+                        //fullFilePath = Path.Combine(oldPath, "Reference.ts");
+                        //if (!Directory.Exists(oldPath))
+                        //    Directory.CreateDirectory(oldPath);
+                        //TypeScriptLanguageMap typeScriptLanguageMap = new TypeScriptLanguageMap();
+                        //File.WriteAllText(fullFilePath, typeScriptLanguageMap.CalculateMapData(oldPath, namespaceReferenceInfo, config.ServiceNameSpace), Encoding.UTF8);
 
                         AngularTypeScriptLanguageMap angularTypeScriptLanguageMap = new AngularTypeScriptLanguageMap();
-                        angularTypeScriptLanguageMap.CalculateMapData(newPath, namespaceReferenceInfo, config.ServiceNameSpace);
+                        angularTypeScriptLanguageMap.CalculateMapData(servicePath, namespaceReferenceInfo, config.ServiceNameSpace);
 
                     }
                     //blazor
