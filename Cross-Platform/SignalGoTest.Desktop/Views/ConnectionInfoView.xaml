@@ -478,6 +478,7 @@
                   <DropDownItem Content="C# Blazor" Background="White"/>
                   <DropDownItem Content="Java Android" Background="White"/>
                   <DropDownItem Content="Swift" Background="White"/>
+                  <DropDownItem Content="Dart/Flutter" Background="White"/>
                 </DropDown>
                 <TextBlock Foreground="Black" Grid.Row="4" Text="Service Type:" Margin="0,10,10,0"/>
                 <DropDown x:Name="cboServiceType" Background="White" Foreground="Black" Grid.Row="5" SelectedIndex="{Binding CurrentConnectionInfo.CodeGeneratorInfo.ServiceType,Converter={StaticResource EnumToIntegerConverter},Mode=TwoWay}" Margin="0,10,0,0">

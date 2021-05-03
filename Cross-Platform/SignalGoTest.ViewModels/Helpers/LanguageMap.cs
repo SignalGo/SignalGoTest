@@ -97,6 +97,12 @@ namespace SignalGoTest.ViewModels.Helpers
                         SwiftLanguageMap swiftLanguageMap = new SwiftLanguageMap();
                         swiftLanguageMap.CalculateMapData(servicePath, namespaceReferenceInfo, config.ServiceNameSpace);
                     }
+                    //flutter
+                    else if (config.LanguageType == 5)
+                    {
+                        DartFlutterLanguageMap flutterLanguageMap = new DartFlutterLanguageMap();
+                        flutterLanguageMap.CalculateMapData(servicePath, namespaceReferenceInfo, config.ServiceNameSpace);
+                    }
                 }
             }
             else

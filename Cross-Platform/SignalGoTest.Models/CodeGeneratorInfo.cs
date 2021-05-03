@@ -8,7 +8,8 @@ namespace SignalGoTest.Models
         Angular = 1,
         Blazor = 2,
         JavaAndroid = 3,
-        Swift = 4
+        Swift = 4,
+        Flutter = 5
     }
 
     public enum ServiceType : byte
